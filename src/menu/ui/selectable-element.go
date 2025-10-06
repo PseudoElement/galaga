@@ -1,40 +1,14 @@
 package ui
 
-import "github.com/charmbracelet/lipgloss"
+import "github.com/pseudoelement/galaga/src/menu/models"
 
 type SelectableElement struct {
-	el           lipgloss.Style
-	selected     bool
-	initialValue string
+	*BaseViewElement
+	selected bool
 }
 
-func NewSelectableElement(text string) *SelectableElement {
-	el := lipgloss.NewStyle().Height(2).Bold(true).SetString(text)
-	return &SelectableElement{el: el, initialValue: text}
-}
-
-func (se *SelectableElement) LipglossElement() lipgloss.Style {
-	return se.el
-}
-
-func (se *SelectableElement) UpdateStyle(newStyle lipgloss.Style) {
-	se.el = newStyle
-}
-
-func (se *SelectableElement) UpdateText(text string) {
-	se.el = se.el.SetString(text)
-}
-
-func (se *SelectableElement) String() string {
-	return se.el.Render()
-}
-
-func (se *SelectableElement) Value() string {
-	return se.el.Value()
-}
-
-func (se *SelectableElement) InitialValue() string {
-	return se.initialValue
+func NewSelectableElement(params models.BaseViewElementParams) *SelectableElement {
+	return &SelectableElement{BaseViewElement: NewBaseViewElement(params)}
 }
 
 func (se *SelectableElement) SetSelected(selected bool) {
@@ -44,3 +18,6 @@ func (se *SelectableElement) SetSelected(selected bool) {
 func (se *SelectableElement) IsSelected() bool {
 	return se.selected
 }
+
+var _ models.IBaseViewElement = (*SelectableElement)(nil)
+var _ models.ISelectableElement = (*SelectableElement)(nil)

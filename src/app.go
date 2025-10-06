@@ -2,19 +2,34 @@ package app
 
 import (
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/pseudoelement/galaga/src/injector"
+	"github.com/pseudoelement/galaga/src/menu/models"
 	"github.com/pseudoelement/galaga/src/menu/pages"
+	"github.com/pseudoelement/galaga/src/storage"
+	app_view "github.com/pseudoelement/galaga/src/view"
 )
 
 type App struct {
-	view AppView
+	view     models.IAppView
+	injector models.IAppInjector
 }
 
 func NewApp() *App {
-	return &App{view: NewAppView()}
+	appStorage := storage.NewAppStorage()
+	appView := app_view.NewAppView(pages.NewPageFirst(nil))
+	injector := injector.NewAppInjector(appStorage, appView)
+	println("start NewApp")
+
+	appView.SetPage(pages.NewPageFirst(injector))
+
+	return &App{view: appView, injector: injector}
 }
 
 func (app *App) Init() tea.Cmd {
-	app.view.SetPage(pages.NewPageFirst())
+
+	// app.view = appView
+	// app.injector = injector.NewAppInjector(appStorage, appView)
+
 	return nil
 }
 
@@ -30,6 +45,22 @@ func (app *App) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return app, nil
 		case "down":
 			app.view.CurrentPage().SelectNext()
+			return app, nil
+		case "enter":
+			currPage := app.view.CurrentPage()
+			selectedEl := currPage.SelectedItem()
+			if selectedEl != nil {
+				actionEl, withAction := selectedEl.(models.IActionElement)
+				if withAction {
+					actionEl.Action()
+				}
+				redirectEl, withRedirect := selectedEl.(models.IRedirectableElement)
+				if withRedirect {
+					nextPage := redirectEl.PageToRedirect()
+					app.view.SetPage(nextPage)
+				}
+			}
+
 			return app, nil
 		}
 
