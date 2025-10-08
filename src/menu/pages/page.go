@@ -4,7 +4,7 @@ import (
 	"container/list"
 
 	"github.com/charmbracelet/lipgloss"
-	"github.com/pseudoelement/galaga/src/menu/models"
+	"github.com/pseudoelement/galaga/src/models"
 )
 
 type Page struct {
@@ -76,7 +76,6 @@ func (p *Page) SelectLastSelectable() {
 		currentEl, selectable := el.Value.(models.ISelectableElement)
 		if selectable {
 			lastSelectableEl = currentEl
-			break
 		}
 	}
 	if lastSelectableEl != nil {

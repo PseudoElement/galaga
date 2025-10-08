@@ -1,9 +1,9 @@
 package pages
 
 import (
-	"github.com/pseudoelement/galaga/src/menu/models"
 	pages_styles "github.com/pseudoelement/galaga/src/menu/pages/styles"
 	"github.com/pseudoelement/galaga/src/menu/ui"
+	"github.com/pseudoelement/galaga/src/models"
 )
 
 type PageControls struct {

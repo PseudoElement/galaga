@@ -1,6 +1,6 @@
 package ui
 
-import "github.com/pseudoelement/galaga/src/menu/models"
+import "github.com/pseudoelement/galaga/src/models"
 
 type RedirectableElement struct {
 	*SelectableElement

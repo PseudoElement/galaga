@@ -1,8 +1,6 @@
 package pages
 
-import (
-	"github.com/pseudoelement/galaga/src/menu/models"
-)
+import "github.com/pseudoelement/galaga/src/models"
 
 type PageFirst struct {
 	*Page

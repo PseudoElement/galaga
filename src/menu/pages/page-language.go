@@ -3,9 +3,10 @@ package pages
 import (
 	"fmt"
 
-	"github.com/pseudoelement/galaga/src/menu/models"
 	pages_styles "github.com/pseudoelement/galaga/src/menu/pages/styles"
 	"github.com/pseudoelement/galaga/src/menu/ui"
+	"github.com/pseudoelement/galaga/src/models"
+	"github.com/pseudoelement/galaga/src/storage"
 )
 
 type PageLanguage struct {
@@ -14,6 +15,7 @@ type PageLanguage struct {
 
 func NewPageLanguage(injector models.IAppInjector) models.IPage {
 	p := &PageLanguage{Page: NewPage(injector)}
+	langStr := storage.LanguageMap[injector.Storage().Language()]
 
 	// init list
 	p.elementsList.PushBack(ui.NewBaseViewElement(models.BaseViewElementParams{
@@ -22,7 +24,7 @@ func NewPageLanguage(injector models.IAppInjector) models.IPage {
 	}))
 	p.elementsList.PushBack(ui.NewBaseViewElement(models.BaseViewElementParams{
 		InitialStyle: pages_styles.AccentTextStyle,
-		Text:         fmt.Sprintf("Current language: %v\n", injector.Storage().Language()),
+		Text:         fmt.Sprintf("Current language: %v\n", langStr),
 	}))
 	p.elementsList.PushBack(NewEnglishLanguageButton(p.injector))
 	p.elementsList.PushBack(NewRussianLanguageButton(p.injector))

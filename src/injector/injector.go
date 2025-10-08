@@ -1,7 +1,7 @@
 package injector
 
 import (
-	"github.com/pseudoelement/galaga/src/menu/models"
+	"github.com/pseudoelement/galaga/src/models"
 )
 
 type AppInjector struct {

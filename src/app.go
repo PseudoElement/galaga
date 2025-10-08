@@ -3,8 +3,8 @@ package app
 import (
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/pseudoelement/galaga/src/injector"
-	"github.com/pseudoelement/galaga/src/menu/models"
 	"github.com/pseudoelement/galaga/src/menu/pages"
+	"github.com/pseudoelement/galaga/src/models"
 	"github.com/pseudoelement/galaga/src/storage"
 	app_view "github.com/pseudoelement/galaga/src/view"
 )
@@ -26,10 +26,6 @@ func NewApp() *App {
 }
 
 func (app *App) Init() tea.Cmd {
-
-	// app.view = appView
-	// app.injector = injector.NewAppInjector(appStorage, appView)
-
 	return nil
 }
 
@@ -65,8 +61,11 @@ func (app *App) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		}
 
 	case tea.WindowSizeMsg:
-		// width := msg.Width
-		// height := msg.Height
+		windowSize := models.WindowSize{
+			Width:  msg.Width,
+			Height: msg.Height,
+		}
+		app.injector.Storage().SetWindowSize(windowSize)
 	}
 
 	return app, nil

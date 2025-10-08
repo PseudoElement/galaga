@@ -1,6 +1,6 @@
 package app_view
 
-import "github.com/pseudoelement/galaga/src/menu/models"
+import "github.com/pseudoelement/galaga/src/models"
 
 type AppView struct {
 	page models.IPage

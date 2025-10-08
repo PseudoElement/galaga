@@ -2,7 +2,7 @@ package ui
 
 import (
 	"github.com/charmbracelet/lipgloss"
-	"github.com/pseudoelement/galaga/src/menu/models"
+	"github.com/pseudoelement/galaga/src/models"
 )
 
 type BaseViewElement struct {

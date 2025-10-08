@@ -3,9 +3,9 @@ package pages
 import (
 	"syscall"
 
-	"github.com/pseudoelement/galaga/src/menu/models"
 	pages_styles "github.com/pseudoelement/galaga/src/menu/pages/styles"
 	"github.com/pseudoelement/galaga/src/menu/ui"
+	"github.com/pseudoelement/galaga/src/models"
 	"github.com/pseudoelement/galaga/src/storage"
 )
 
@@ -64,7 +64,7 @@ func NewEnglishLanguageButton(injector models.IAppInjector) *LanguageButton {
 		models.RedirectableElementParams{
 			BaseViewElementParams: models.BaseViewElementParams{
 				Injector:     injector,
-				Text:         "English",
+				Text:         storage.LanguageMap[storage.EN],
 				InitialStyle: pages_styles.BoldTextStyle,
 			},
 			RedirectCallback: func() models.IPage { return NewPageFirst(injector) },
@@ -78,7 +78,7 @@ func NewRussianLanguageButton(injector models.IAppInjector) *LanguageButton {
 		models.RedirectableElementParams{
 			BaseViewElementParams: models.BaseViewElementParams{
 				Injector:     injector,
-				Text:         "Russian",
+				Text:         storage.LanguageMap[storage.RU],
 				InitialStyle: pages_styles.BoldTextStyle,
 			},
 			RedirectCallback: func() models.IPage { return NewPageFirst(injector) },
