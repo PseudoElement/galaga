@@ -12,19 +12,19 @@ type PageControls struct {
 
 func NewPageControls(injector models.IAppInjector) models.IPage {
 	p := &PageControls{Page: NewPage(injector)}
+	windowWidth := injector.Storage().WindowSize().Width
 
 	// init list
 	p.elementsList.PushBack(ui.NewBaseViewElement(models.BaseViewElementParams{
-		InitialStyle: pages_styles.AccentTextStyle.Width(30),
-		Text: `Galaga rules
-* Move top - W
-* Move down - S
-* Move left - A
-* Move right - D
-* Quit game - Escape or Enter
-`,
+		InitialStyle: pages_styles.AccentTextStyle.Width(windowWidth),
+		Text:         injector.LanguageSrv().GetTranslation("menu.text.controls"),
 	}))
-	p.elementsList.PushBack(NewMenuRedirectButton("Back", func() models.IPage { return NewPageFirst(injector) }))
+	p.elementsList.PushBack(
+		NewMenuRedirectButton(
+			injector.LanguageSrv().GetTranslation("menu.buttons.back"),
+			func() models.IPage { return NewPageFirst(injector) },
+		),
+	)
 	p.SelectFirstSelectable()
 
 	return p

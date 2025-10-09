@@ -3,10 +3,10 @@ package pages
 import (
 	"syscall"
 
+	consts "github.com/pseudoelement/galaga/src/constants"
 	pages_styles "github.com/pseudoelement/galaga/src/menu/pages/styles"
 	"github.com/pseudoelement/galaga/src/menu/ui"
 	"github.com/pseudoelement/galaga/src/models"
-	"github.com/pseudoelement/galaga/src/storage"
 )
 
 func NewMenuRedirectButton(text string, redirectCallback func() models.IPage) models.IRedirectableElement {
@@ -25,10 +25,10 @@ type QuitButton struct {
 	*ui.SelectableElement
 }
 
-func NewQuitButton() *QuitButton {
+func NewQuitButton(injector models.IAppInjector) *QuitButton {
 	return &QuitButton{SelectableElement: ui.NewSelectableElement(models.BaseViewElementParams{
 		InitialStyle: pages_styles.BoldTextStyle,
-		Text:         "Quit",
+		Text:         injector.LanguageSrv().GetTranslation("menu.buttons.quit"),
 	})}
 }
 
@@ -64,12 +64,12 @@ func NewEnglishLanguageButton(injector models.IAppInjector) *LanguageButton {
 		models.RedirectableElementParams{
 			BaseViewElementParams: models.BaseViewElementParams{
 				Injector:     injector,
-				Text:         storage.LanguageMap[storage.EN],
+				Text:         injector.LanguageSrv().GetTranslation("menu.language.english"),
 				InitialStyle: pages_styles.BoldTextStyle,
 			},
 			RedirectCallback: func() models.IPage { return NewPageFirst(injector) },
 		},
-		func() { injector.Storage().SetLanguage(storage.EN) },
+		func() { injector.Storage().SetLanguage(consts.EN) },
 	)
 }
 
@@ -78,12 +78,12 @@ func NewRussianLanguageButton(injector models.IAppInjector) *LanguageButton {
 		models.RedirectableElementParams{
 			BaseViewElementParams: models.BaseViewElementParams{
 				Injector:     injector,
-				Text:         storage.LanguageMap[storage.RU],
+				Text:         injector.LanguageSrv().GetTranslation("menu.language.russian"),
 				InitialStyle: pages_styles.BoldTextStyle,
 			},
 			RedirectCallback: func() models.IPage { return NewPageFirst(injector) },
 		},
-		func() { injector.Storage().SetLanguage(storage.RU) },
+		func() { injector.Storage().SetLanguage(consts.RU) },
 	)
 }
 

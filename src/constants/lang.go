@@ -1,4 +1,4 @@
-package storage
+package consts
 
 import "github.com/pseudoelement/galaga/src/models"
 

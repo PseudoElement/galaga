@@ -5,6 +5,7 @@ import (
 	"github.com/pseudoelement/galaga/src/injector"
 	"github.com/pseudoelement/galaga/src/menu/pages"
 	"github.com/pseudoelement/galaga/src/models"
+	language_srv "github.com/pseudoelement/galaga/src/services/language-service"
 	"github.com/pseudoelement/galaga/src/storage"
 	app_view "github.com/pseudoelement/galaga/src/view"
 )
@@ -15,10 +16,16 @@ type App struct {
 }
 
 func NewApp() *App {
+	injector := injector.NewAppInjector()
+
 	appStorage := storage.NewAppStorage()
-	appView := app_view.NewAppView(pages.NewPageFirst(nil))
-	injector := injector.NewAppInjector(appStorage, appView)
-	println("start NewApp")
+	injector.SetStorage(appStorage)
+
+	appLanguageSrv := language_srv.NewAppLanguageSrv(appStorage)
+	injector.SetLanguageSrv(appLanguageSrv)
+
+	appView := app_view.NewAppView(pages.NewPageFirst(injector))
+	injector.SetView(appView)
 
 	appView.SetPage(pages.NewPageFirst(injector))
 

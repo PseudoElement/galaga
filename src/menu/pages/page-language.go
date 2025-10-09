@@ -3,10 +3,10 @@ package pages
 import (
 	"fmt"
 
+	consts "github.com/pseudoelement/galaga/src/constants"
 	pages_styles "github.com/pseudoelement/galaga/src/menu/pages/styles"
 	"github.com/pseudoelement/galaga/src/menu/ui"
 	"github.com/pseudoelement/galaga/src/models"
-	"github.com/pseudoelement/galaga/src/storage"
 )
 
 type PageLanguage struct {
@@ -15,20 +15,24 @@ type PageLanguage struct {
 
 func NewPageLanguage(injector models.IAppInjector) models.IPage {
 	p := &PageLanguage{Page: NewPage(injector)}
-	langStr := storage.LanguageMap[injector.Storage().Language()]
+	langStr := consts.LanguageMap[injector.Storage().Language()]
 
 	// init list
 	p.elementsList.PushBack(ui.NewBaseViewElement(models.BaseViewElementParams{
 		InitialStyle: pages_styles.BoldTextStyle,
-		Text:         `Select language`,
+		Text:         injector.LanguageSrv().GetTranslation("menu.language.selectLang"),
 	}))
 	p.elementsList.PushBack(ui.NewBaseViewElement(models.BaseViewElementParams{
 		InitialStyle: pages_styles.AccentTextStyle,
-		Text:         fmt.Sprintf("Current language: %v\n", langStr),
+		Text:         fmt.Sprintf("%v: %v\n", injector.LanguageSrv().GetTranslation("menu.language.currLang"), langStr),
 	}))
 	p.elementsList.PushBack(NewEnglishLanguageButton(p.injector))
 	p.elementsList.PushBack(NewRussianLanguageButton(p.injector))
-	p.elementsList.PushBack(NewMenuRedirectButton("Back", func() models.IPage { return NewPageFirst(injector) }))
+	p.elementsList.PushBack(NewMenuRedirectButton(
+		injector.LanguageSrv().GetTranslation("menu.buttons.back"),
+		func() models.IPage { return NewPageFirst(injector) },
+	),
+	)
 	p.SelectFirstSelectable()
 
 	return p

@@ -1,6 +1,9 @@
 package storage
 
-import "github.com/pseudoelement/galaga/src/models"
+import (
+	consts "github.com/pseudoelement/galaga/src/constants"
+	"github.com/pseudoelement/galaga/src/models"
+)
 
 type AppStorage struct {
 	language   models.Language
@@ -8,7 +11,7 @@ type AppStorage struct {
 }
 
 func NewAppStorage() *AppStorage {
-	return &AppStorage{language: EN}
+	return &AppStorage{language: consts.EN}
 }
 
 func (as *AppStorage) Language() models.Language {
