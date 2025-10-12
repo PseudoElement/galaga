@@ -17,11 +17,11 @@ func NewPageControls(injector models.IAppInjector) models.IPage {
 	// init list
 	p.elementsList.PushBack(ui.NewBaseViewElement(models.BaseViewElementParams{
 		InitialStyle: pages_styles.AccentTextStyle.Width(windowWidth),
-		Text:         injector.LanguageSrv().GetTranslation("menu.text.controls"),
+		Text:         injector.LanguageSrv().Translate("menu.text.controls"),
 	}))
 	p.elementsList.PushBack(
 		NewMenuRedirectButton(
-			injector.LanguageSrv().GetTranslation("menu.buttons.back"),
+			injector.LanguageSrv().Translate("menu.buttons.back"),
 			func() models.IPage { return NewPageFirst(injector) },
 		),
 	)

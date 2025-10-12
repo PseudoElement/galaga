@@ -28,7 +28,7 @@ func NewAppLanguageSrv(storage models.IAppStorage) models.IAppLanguageSrv {
 /*
  * @param key example: menu.buttons.start
  */
-func (ls *AppLanguageSrv) GetTranslation(translationPath string) string {
+func (ls *AppLanguageSrv) Translate(translationPath string) string {
 	languageMap := ls.langScheme[ls.storage.Language()]
 
 	var translation any = nil

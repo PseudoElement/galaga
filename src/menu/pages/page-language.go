@@ -20,16 +20,16 @@ func NewPageLanguage(injector models.IAppInjector) models.IPage {
 	// init list
 	p.elementsList.PushBack(ui.NewBaseViewElement(models.BaseViewElementParams{
 		InitialStyle: pages_styles.BoldTextStyle,
-		Text:         injector.LanguageSrv().GetTranslation("menu.language.selectLang"),
+		Text:         injector.LanguageSrv().Translate("menu.language.selectLang"),
 	}))
 	p.elementsList.PushBack(ui.NewBaseViewElement(models.BaseViewElementParams{
 		InitialStyle: pages_styles.AccentTextStyle,
-		Text:         fmt.Sprintf("%v: %v\n", injector.LanguageSrv().GetTranslation("menu.language.currLang"), langStr),
+		Text:         fmt.Sprintf("%v: %v\n", injector.LanguageSrv().Translate("menu.language.currLang"), langStr),
 	}))
 	p.elementsList.PushBack(NewEnglishLanguageButton(p.injector))
 	p.elementsList.PushBack(NewRussianLanguageButton(p.injector))
 	p.elementsList.PushBack(NewMenuRedirectButton(
-		injector.LanguageSrv().GetTranslation("menu.buttons.back"),
+		injector.LanguageSrv().Translate("menu.buttons.back"),
 		func() models.IPage { return NewPageFirst(injector) },
 	),
 	)

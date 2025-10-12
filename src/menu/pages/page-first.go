@@ -12,25 +12,25 @@ func NewPageFirst(injector models.IAppInjector) models.IPage {
 	// init list
 	p.elementsList.PushBack(
 		NewMenuRedirectButton(
-			injector.LanguageSrv().GetTranslation("menu.buttons.start"),
+			injector.LanguageSrv().Translate("menu.buttons.start"),
 			func() models.IPage { return NewPageRules(injector) },
 		),
 	)
 	p.elementsList.PushBack(
 		NewMenuRedirectButton(
-			injector.LanguageSrv().GetTranslation("menu.buttons.language"),
+			injector.LanguageSrv().Translate("menu.buttons.language"),
 			func() models.IPage { return NewPageLanguage(injector) },
 		),
 	)
 	p.elementsList.PushBack(
 		NewMenuRedirectButton(
-			injector.LanguageSrv().GetTranslation("menu.buttons.rules"),
+			injector.LanguageSrv().Translate("menu.buttons.rules"),
 			func() models.IPage { return NewPageRules(injector) },
 		),
 	)
 	p.elementsList.PushBack(
 		NewMenuRedirectButton(
-			injector.LanguageSrv().GetTranslation("menu.buttons.controls"),
+			injector.LanguageSrv().Translate("menu.buttons.controls"),
 			func() models.IPage { return NewPageControls(injector) },
 		),
 	)

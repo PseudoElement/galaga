@@ -4,5 +4,5 @@ type IAppLanguageSrv interface {
 	/*
 	 * @param key example: menu.buttons.start
 	 */
-	GetTranslation(key string) string
+	Translate(key string) string
 }

@@ -28,7 +28,7 @@ type QuitButton struct {
 func NewQuitButton(injector models.IAppInjector) *QuitButton {
 	return &QuitButton{SelectableElement: ui.NewSelectableElement(models.BaseViewElementParams{
 		InitialStyle: pages_styles.BoldTextStyle,
-		Text:         injector.LanguageSrv().GetTranslation("menu.buttons.quit"),
+		Text:         injector.LanguageSrv().Translate("menu.buttons.quit"),
 	})}
 }
 
@@ -64,7 +64,7 @@ func NewEnglishLanguageButton(injector models.IAppInjector) *LanguageButton {
 		models.RedirectableElementParams{
 			BaseViewElementParams: models.BaseViewElementParams{
 				Injector:     injector,
-				Text:         injector.LanguageSrv().GetTranslation("menu.language.english"),
+				Text:         injector.LanguageSrv().Translate("menu.language.english"),
 				InitialStyle: pages_styles.BoldTextStyle,
 			},
 			RedirectCallback: func() models.IPage { return NewPageFirst(injector) },
@@ -78,7 +78,7 @@ func NewRussianLanguageButton(injector models.IAppInjector) *LanguageButton {
 		models.RedirectableElementParams{
 			BaseViewElementParams: models.BaseViewElementParams{
 				Injector:     injector,
-				Text:         injector.LanguageSrv().GetTranslation("menu.language.russian"),
+				Text:         injector.LanguageSrv().Translate("menu.language.russian"),
 				InitialStyle: pages_styles.BoldTextStyle,
 			},
 			RedirectCallback: func() models.IPage { return NewPageFirst(injector) },
