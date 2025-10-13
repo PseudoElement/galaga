@@ -2,9 +2,11 @@ package app
 
 import (
 	tea "github.com/charmbracelet/bubbletea"
+	game_models "github.com/pseudoelement/galaga/src/game/models"
 	"github.com/pseudoelement/galaga/src/injector"
 	"github.com/pseudoelement/galaga/src/menu/pages"
 	"github.com/pseudoelement/galaga/src/models"
+	game_srv "github.com/pseudoelement/galaga/src/services/game-service"
 	language_srv "github.com/pseudoelement/galaga/src/services/language-service"
 	"github.com/pseudoelement/galaga/src/storage"
 	app_view "github.com/pseudoelement/galaga/src/view"
@@ -12,10 +14,11 @@ import (
 
 type App struct {
 	view     models.IAppView
+	gameSrv  models.IAppGameSrv
 	injector models.IAppInjector
 }
 
-func NewApp() *App {
+func NewApp() *tea.Program {
 	injector := injector.NewAppInjector()
 
 	appStorage := storage.NewAppStorage()
@@ -27,9 +30,17 @@ func NewApp() *App {
 	appView := app_view.NewAppView(pages.NewPageFirst(injector))
 	injector.SetView(appView)
 
+	appGameSrv := game_srv.NewAppGameSrv(injector)
+	injector.SetGameSrv(appGameSrv)
+
 	appView.SetPage(pages.NewPageFirst(injector))
 
-	return &App{view: appView, injector: injector}
+	app := &App{view: appView, gameSrv: appGameSrv, injector: injector}
+
+	teaProgram := tea.NewProgram(app)
+	injector.SetTeaProgram(teaProgram)
+
+	return teaProgram
 }
 
 func (app *App) Init() tea.Cmd {
@@ -38,6 +49,9 @@ func (app *App) Init() tea.Cmd {
 
 func (app *App) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
+
+	case models.UpdateTrigger:
+		return app, nil
 
 	case tea.KeyMsg:
 		switch msg.String() {
@@ -63,7 +77,23 @@ func (app *App) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 					app.view.SetPage(nextPage)
 				}
 			}
+			return app, nil
 
+		case "w":
+			app.gameSrv.Player().Move(game_models.MoveTop())
+			return app, nil
+		case "a":
+			app.gameSrv.Player().Move(game_models.MoveLeft())
+			return app, nil
+		case "s":
+			app.gameSrv.Player().Move(game_models.MoveBottom())
+			return app, nil
+		case "d":
+			app.gameSrv.Player().Move(game_models.MoveRight())
+			return app, nil
+		case "esc":
+			app.gameSrv.EndGame()
+			app.view.SetPage(pages.NewPageFirst(app.injector))
 			return app, nil
 		}
 

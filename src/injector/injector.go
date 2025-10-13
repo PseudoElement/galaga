@@ -1,6 +1,7 @@
 package injector
 
 import (
+	tea "github.com/charmbracelet/bubbletea"
 	"github.com/pseudoelement/galaga/src/models"
 )
 
@@ -8,6 +9,8 @@ type AppInjector struct {
 	storage     models.IAppStorage
 	view        models.IAppView
 	languageSrv models.IAppLanguageSrv
+	gameSrv     models.IAppGameSrv
+	teaProgram  *tea.Program
 }
 
 func NewAppInjector() *AppInjector {
@@ -36,4 +39,20 @@ func (i *AppInjector) View() models.IAppView {
 
 func (i *AppInjector) SetView(view models.IAppView) {
 	i.view = view
+}
+
+func (i *AppInjector) GameSrv() models.IAppGameSrv {
+	return i.gameSrv
+}
+
+func (i *AppInjector) SetGameSrv(gameSrv models.IAppGameSrv) {
+	i.gameSrv = gameSrv
+}
+
+func (i *AppInjector) TeaProgram() *tea.Program {
+	return i.teaProgram
+}
+
+func (i *AppInjector) SetTeaProgram(teaProgram *tea.Program) {
+	i.teaProgram = teaProgram
 }

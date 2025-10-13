@@ -13,7 +13,7 @@ func NewPageFirst(injector models.IAppInjector) models.IPage {
 	p.elementsList.PushBack(
 		NewMenuRedirectButton(
 			injector.LanguageSrv().Translate("menu.buttons.start"),
-			func() models.IPage { return NewPageRules(injector) },
+			func() models.IPage { return NewPageGame(injector) },
 		),
 	)
 	p.elementsList.PushBack(
