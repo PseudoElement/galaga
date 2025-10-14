@@ -80,16 +80,28 @@ func (app *App) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return app, nil
 
 		case "w":
-			app.gameSrv.Player().Move(game_models.MoveTop())
+			moveDir := game_models.MoveTopX0_Y3()
+			if game_srv.CanMoveTop(app.gameSrv.Player(), moveDir) {
+				app.gameSrv.Player().Move(moveDir)
+			}
 			return app, nil
 		case "a":
-			app.gameSrv.Player().Move(game_models.MoveLeft())
+			moveDir := game_models.MoveLeftX3_Y0()
+			if game_srv.CanMoveLeft(app.gameSrv.Player(), moveDir) {
+				app.gameSrv.Player().Move(moveDir)
+			}
 			return app, nil
 		case "s":
-			app.gameSrv.Player().Move(game_models.MoveBottom())
+			moveDir := game_models.MoveBottomX0_Y3()
+			if game_srv.CanMoveBottom(app.gameSrv.Player(), moveDir, app.injector) {
+				app.gameSrv.Player().Move(moveDir)
+			}
 			return app, nil
 		case "d":
-			app.gameSrv.Player().Move(game_models.MoveRight())
+			moveDir := game_models.MoveRightX3_Y0()
+			if game_srv.CanMoveRight(app.gameSrv.Player(), moveDir, app.injector) {
+				app.gameSrv.Player().Move(moveDir)
+			}
 			return app, nil
 		case "esc":
 			app.gameSrv.EndGame()

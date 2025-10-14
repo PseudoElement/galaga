@@ -10,8 +10,16 @@ type GameObject struct {
 }
 
 func NewGameObject(cells []game_models.ICell) *GameObject {
+	// Create deep copies of each cell
 	prevCells := make([]game_models.ICell, len(cells))
-	copy(prevCells, cells)
+	for i, cell := range cells {
+		// Create a new cell with the same properties
+		prevCells[i] = NewCell(game_models.CellConstructorParams{
+			Color:  cell.Color(),
+			Coords: cell.Coords(),
+		})
+	}
+
 	return &GameObject{cells: cells, prevCells: prevCells}
 }
 
@@ -24,13 +32,20 @@ func (obj *GameObject) PrevCells() []game_models.ICell {
 }
 
 func (obj *GameObject) Move(dir game_models.MoveDir) {
-	for _, cell := range obj.cells {
+	for idx, cell := range obj.cells {
 		prevCoords := cell.Coords()
-		// obj.prevCells[idx].SetCoords(prevCoords)
+		prevCellState := obj.prevCells[idx]
+		prevCellState.SetCoords(prevCoords)
+
 		cell.SetCoords(game_models.Coords{
 			X: prevCoords.X + dir.X,
 			Y: prevCoords.Y + dir.Y,
 		})
+		// println("=================")
+		// log.Println("newCoords.Coords() -", cell.Coords())
+		// log.Println("prevCellState.Coords() -", obj.prevCells[idx].Coords())
+		// log.Println("prevCoords -", prevCoords)
+		// println("=================")
 	}
 }
 

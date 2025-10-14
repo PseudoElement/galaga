@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/charmbracelet/lipgloss"
+	game_objects "github.com/pseudoelement/galaga/src/game/game-objects"
 	game_models "github.com/pseudoelement/galaga/src/game/models"
 	"github.com/pseudoelement/galaga/src/models"
 	game_srv_styles "github.com/pseudoelement/galaga/src/services/game-service/styles"
@@ -12,7 +13,7 @@ import (
 type AppGameSrv struct {
 	injector models.IAppInjector
 
-	arena       [][]string
+	arena       [][]game_models.ICell
 	objectsPool []game_models.IGameObject
 	player      game_models.IPlayer
 	score       int32
@@ -22,7 +23,7 @@ type AppGameSrv struct {
 func NewAppGameSrv(injector models.IAppInjector) models.IAppGameSrv {
 	return &AppGameSrv{
 		injector:    injector,
-		arena:       make([][]string, 0),
+		arena:       make([][]game_models.ICell, 0),
 		objectsPool: make([]game_models.IGameObject, 0),
 		score:       0,
 		player:      nil,
@@ -38,7 +39,7 @@ func (gs *AppGameSrv) View() string {
 	// align rows horizontally
 	rows := make([]string, 0)
 	for _, arenaRow := range gs.arena {
-		row := lipgloss.JoinHorizontal(lipgloss.Left, arenaRow...)
+		row := lipgloss.JoinHorizontal(lipgloss.Left, cellsToView(arenaRow)...)
 		rows = append(rows, row)
 	}
 
@@ -55,23 +56,31 @@ func (gs *AppGameSrv) StartGame() {
 	height := gs.injector.Storage().WindowSize().Height
 	// first row leave for header with HP and score
 	rowsCount := height - 1
-	for heightCount := range rowsCount {
-		arenaRow := make([]string, 0, width)
-		for widthCount := range width {
+	for heightCount := range rowsCount { // y
+		arenaRow := make([]game_models.ICell, 0, width)
+		for widthCount := range width { // x
 			if (heightCount+widthCount)%2 == 0 {
-				arenaRow = append(arenaRow, game_srv_styles.DarkCell.Render())
+				arenaRow = append(arenaRow, game_objects.NewCell(cellParams(
+					int16(widthCount),
+					int16(heightCount),
+					game_srv_styles.DarkBgColor,
+				)))
 			} else {
-				arenaRow = append(arenaRow, game_srv_styles.SemiDarkCell.Render())
+				arenaRow = append(arenaRow, game_objects.NewCell(cellParams(
+					int16(widthCount),
+					int16(heightCount),
+					game_srv_styles.SemiDarkBgColor,
+				)))
 			}
 		}
 
 		gs.arena = append(gs.arena, arenaRow)
 	}
 
+	// render player's starship
 	for _, cell := range gs.player.Cells() {
 		coords := cell.Coords()
-		playerCell := game_srv_styles.Cell.Background(lipgloss.Color(cell.Color()))
-		gs.arena[coords.Y][coords.X] = playerCell.Render()
+		gs.arena[coords.Y][coords.X] = cell
 	}
 
 	go gs.runLoop()
@@ -80,7 +89,7 @@ func (gs *AppGameSrv) StartGame() {
 func (gs *AppGameSrv) EndGame() {
 	gs.player = nil
 	gs.objectsPool = make([]game_models.IGameObject, 0)
-	gs.arena = make([][]string, 0)
+	gs.arena = make([][]game_models.ICell, 0)
 	gs.stop = true
 	gs.resetScore()
 }
@@ -94,21 +103,18 @@ func (gs *AppGameSrv) runLoop() {
 		time.Sleep(16 * time.Millisecond)
 		gs.injector.TeaProgram().Send(models.UpdateTrigger{})
 
-		// @FIX use prevCells instead of redrawing whole arena
-		for rowIdx, arenaRow := range gs.arena {
-			for columnIdx := range arenaRow {
-				if (rowIdx+columnIdx)%2 == 0 {
-					arenaRow[columnIdx] = game_srv_styles.DarkCell.Render()
-				} else {
-					arenaRow[columnIdx] = game_srv_styles.SemiDarkCell.Render()
-				}
+		for _, cell := range gs.player.PrevCells() {
+			coords := cell.Coords()
+			if (coords.X+coords.Y)%2 == 0 {
+				gs.arena[coords.Y][coords.X] = game_objects.NewCell(cellParams(coords.X, coords.Y, game_srv_styles.DarkBgColor))
+			} else {
+				gs.arena[coords.Y][coords.X] = game_objects.NewCell(cellParams(coords.X, coords.Y, game_srv_styles.SemiDarkBgColor))
 			}
 		}
 
 		for _, cell := range gs.player.Cells() {
 			coords := cell.Coords()
-			playerCell := game_srv_styles.Cell.Background(lipgloss.Color(cell.Color()))
-			gs.arena[coords.Y][coords.X] = playerCell.Render()
+			gs.arena[coords.Y][coords.X] = cell
 		}
 	}
 }

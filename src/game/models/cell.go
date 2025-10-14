@@ -1,8 +1,10 @@
 package game_models
 
+import "github.com/charmbracelet/lipgloss"
+
 type Coords struct {
-	X int8
-	Y int8
+	X int16
+	Y int16
 }
 
 type ICell interface {
@@ -10,6 +12,7 @@ type ICell interface {
 	SetColor(color string)
 	Coords() Coords
 	SetCoords(coords Coords)
+	Style() lipgloss.Style
 }
 
 type CellConstructorParams struct {
