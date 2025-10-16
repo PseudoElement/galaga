@@ -8,18 +8,20 @@ import (
 )
 
 type Cell struct {
-	color  string
-	style  lipgloss.Style
-	coords game_models.Coords
+	color     string
+	style     lipgloss.Style
+	coords    game_models.Coords
+	destroyed bool
 }
 
 func NewCell(params game_models.CellConstructorParams) *Cell {
 	style := lipgloss.NewStyle().Height(1).Width(1).Background(lipgloss.Color(params.Color))
 
 	return &Cell{
-		color:  params.Color,
-		coords: params.Coords,
-		style:  style,
+		color:     params.Color,
+		coords:    params.Coords,
+		style:     style,
+		destroyed: false,
 	}
 }
 
@@ -42,6 +44,14 @@ func (c *Cell) Coords() game_models.Coords {
 
 func (c *Cell) SetCoords(coords game_models.Coords) {
 	c.coords = coords
+}
+
+func (obj *Cell) Destroy() {
+	obj.destroyed = true
+}
+
+func (obj *Cell) Destroyed() bool {
+	return obj.destroyed
 }
 
 var _ game_models.ICell = (*Cell)(nil)

@@ -5,9 +5,9 @@ import (
 )
 
 type GameObject struct {
-	cells     []game_models.ICell
-	prevCells []game_models.ICell
-	destroyed bool
+	cells       []game_models.ICell
+	prevCells   []game_models.ICell
+	prevMoveDir game_models.MoveDir
 }
 
 func NewGameObject(cells []game_models.ICell) *GameObject {
@@ -21,7 +21,11 @@ func NewGameObject(cells []game_models.ICell) *GameObject {
 		})
 	}
 
-	return &GameObject{cells: cells, prevCells: prevCells, destroyed: false}
+	return &GameObject{
+		cells:       cells,
+		prevCells:   prevCells,
+		prevMoveDir: game_models.MoveDir{X: 0, Y: 0},
+	}
 }
 
 func (obj *GameObject) Cells() []game_models.ICell {
@@ -32,7 +36,12 @@ func (obj *GameObject) PrevCells() []game_models.ICell {
 	return obj.prevCells
 }
 
+func (obj *GameObject) PrevMoveDir() game_models.MoveDir {
+	return obj.prevMoveDir
+}
+
 func (obj *GameObject) Move(dir game_models.MoveDir) {
+	obj.prevMoveDir = dir
 	for idx, cell := range obj.cells {
 		prevCoords := cell.Coords()
 		prevCellState := obj.prevCells[idx]
@@ -46,11 +55,18 @@ func (obj *GameObject) Move(dir game_models.MoveDir) {
 }
 
 func (obj *GameObject) Destroy() {
-	obj.destroyed = true
+	for _, cell := range obj.cells {
+		cell.Destroy()
+	}
 }
 
 func (obj *GameObject) Destroyed() bool {
-	return obj.destroyed
+	for _, cell := range obj.cells {
+		if !cell.Destroyed() {
+			return false
+		}
+	}
+	return true
 }
 
 var _ game_models.IGameObject = (*GameObject)(nil)

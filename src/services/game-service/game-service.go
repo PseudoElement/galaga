@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/charmbracelet/lipgloss"
+	"github.com/pseudoelement/galaga/src/game/enemy"
 	g_o "github.com/pseudoelement/galaga/src/game/game-objects"
 	g_m "github.com/pseudoelement/galaga/src/game/models"
 	"github.com/pseudoelement/galaga/src/models"
@@ -15,7 +16,8 @@ const (
 )
 
 type AppGameSrv struct {
-	injector models.IAppInjector
+	injector     models.IAppInjector
+	enemyFactory g_m.IEnemyFactory
 
 	arena          [][]g_m.ICell
 	gameDurationMs int
@@ -27,7 +29,9 @@ type AppGameSrv struct {
 
 func NewAppGameSrv(injector models.IAppInjector, player g_m.IPlayer) models.IAppGameSrv {
 	return &AppGameSrv{
-		injector:       injector,
+		injector:     injector,
+		enemyFactory: enemy.NewEnemyFactory(injector),
+
 		arena:          make([][]g_m.ICell, 0),
 		objectsPool:    make([]g_m.IGameObject, 0),
 		score:          0,
@@ -104,19 +108,24 @@ func (gs *AppGameSrv) runLoop() {
 		gs.clearPrevCellsOfObjectsOnTick()
 		gs.drawNewCellsOfObjectsOnTick()
 
-		gs.handleShot()
+		gs.handleEnemySpawn()
+		// gs.handleShot()
 
 		for _, object := range gs.objectsPool {
 			switch obj := object.(type) {
 			case g_m.IBullet:
 				gs.handleBulletBehaviourOnTick(obj)
+			case g_m.IEnemy:
+				gs.handleEnemyBehaviourOnTick(obj)
 			}
 		}
 
-		// destroy objects out of arena
+		// destroy cells out of arena
 		for _, object := range gs.objectsPool {
-			if isObjectOutOfArena(object, x, y) {
-				object.Destroy()
+			for _, cell := range object.Cells() {
+				if isCellOutOfArena(cell, x, y) {
+					cell.Destroy()
+				}
 			}
 		}
 	}
@@ -147,6 +156,7 @@ func (gs *AppGameSrv) drawNewCellsOfObjectsOnTick() {
 	for _, obj := range gs.objectsPool {
 		for _, cell := range obj.Cells() {
 			coords := cell.Coords()
+			// @FIX fix invalid cell in bottom check
 			if !isCellOutOfArena(cell, width, height) {
 				gs.arena[coords.Y][coords.X] = cell
 			}
@@ -158,16 +168,32 @@ func (gs *AppGameSrv) drawNewCellsOfObjectsOnTick() {
 	}
 }
 
+func (gs *AppGameSrv) handleEnemySpawn() {
+	spawnLatency := GAME_LOOP_TICK_DELAY_MS * 150
+	if gs.gameDurationMs%spawnLatency == 0 {
+		spawnedEnemy := gs.enemyFactory.SpawnEnemy()
+		gs.objectsPool = append(gs.objectsPool, spawnedEnemy)
+	}
+}
+
 func (gs *AppGameSrv) handleShot() {
 	shotLatency := GAME_LOOP_TICK_DELAY_MS * 8
 	if gs.gameDurationMs%shotLatency == 0 {
 		bullets := gs.player.Shot()
-		bulletGameObjects := make([]g_m.IGameObject, len(bullets))
-		for i, bullet := range bullets {
-			bulletGameObjects[i] = bullet
+		for _, bullet := range bullets {
+			gs.objectsPool = append(gs.objectsPool, bullet)
 		}
+	}
+}
 
-		gs.objectsPool = append(gs.objectsPool, bulletGameObjects...)
+func (gs *AppGameSrv) handleEnemyBehaviourOnTick(enemy g_m.IEnemy) {
+	delay := enemy.MovementDelay(GAME_LOOP_TICK_DELAY_MS)
+	if gs.gameDurationMs%delay == 0 {
+		if enemy.PrevMoveDir() == g_m.MoveLeftBottomX1_Y1() {
+			enemy.Move(g_m.MoveRightBottomX1_Y1())
+		} else {
+			enemy.Move(g_m.MoveLeftBottomX1_Y1())
+		}
 	}
 }
 

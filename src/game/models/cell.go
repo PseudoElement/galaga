@@ -10,6 +10,7 @@ type Coords struct {
 }
 
 type ICell interface {
+	IDestroyable
 	Color() string
 	SetColor(color string)
 	Coords() Coords

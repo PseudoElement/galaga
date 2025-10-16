@@ -3,6 +3,7 @@
 - add first enemy(no shots)
 - add 2nd enemy(shooter)
 - add 3th enemy(TNT)
+- add bullets/enemy collision
 - add score
 - add HP boost
 - add UpgradedShips LVL2/LVL3 boost
