@@ -16,3 +16,27 @@ func cellsToView(cells []game_models.ICell) []string {
 	}
 	return view
 }
+
+func isObjectOutOfArena(obj game_models.IGameObject, arenaWidth, arenaHeight int) bool {
+	for _, cell := range obj.Cells() {
+		coords := cell.Coords()
+		if coords.X < 0 ||
+			coords.Y < 0 ||
+			coords.X >= int16(arenaWidth) ||
+			coords.Y >= int16(arenaHeight) {
+			return true
+		}
+	}
+	return false
+}
+
+func isCellOutOfArena(cell game_models.ICell, arenaWidth, arenaHeight int) bool {
+	coords := cell.Coords()
+	if coords.X < 0 ||
+		coords.Y < 0 ||
+		coords.X >= int16(arenaWidth) ||
+		coords.Y >= int16(arenaHeight) {
+		return true
+	}
+	return false
+}

@@ -4,8 +4,24 @@ type IGameObject interface {
 	Cells() []ICell
 	/* use to get position before move and redraw bg without rerendering whole arena */
 	PrevCells() []ICell
-	Move(dir MoveDir)
 	Destroy()
+	Destroyed() bool
+}
+
+type IGameObjectWithHP interface {
+	IGameObject
+	Health() int16
+	GetHeal(plusHealthAmount int16)
+	GetDamage(minusHealthAmount int16)
+}
+
+type IMoveable interface {
+	Move(dir MoveDir)
+}
+
+type IAutoMoveable interface {
+	IMoveable
+	MovementDelay(tickMs int) int
 }
 
 // ////////////////////////////////////////////////////////////////////////////////////////////////////////////

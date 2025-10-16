@@ -2,7 +2,7 @@ package app
 
 import (
 	tea "github.com/charmbracelet/bubbletea"
-	game_models "github.com/pseudoelement/galaga/src/game/models"
+	g_m "github.com/pseudoelement/galaga/src/game/models"
 	"github.com/pseudoelement/galaga/src/injector"
 	"github.com/pseudoelement/galaga/src/menu/pages"
 	"github.com/pseudoelement/galaga/src/models"
@@ -30,10 +30,10 @@ func NewApp() *tea.Program {
 	appView := app_view.NewAppView(pages.NewPageFirst(injector))
 	injector.SetView(appView)
 
-	appGameSrv := game_srv.NewAppGameSrv(injector)
-	injector.SetGameSrv(appGameSrv)
-
 	appView.SetPage(pages.NewPageFirst(injector))
+
+	appGameSrv := game_srv.NewAppGameSrv(injector, nil)
+	injector.SetGameSrv(appGameSrv)
 
 	app := &App{view: appView, gameSrv: appGameSrv, injector: injector}
 
@@ -80,25 +80,25 @@ func (app *App) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return app, nil
 
 		case "w":
-			moveDir := game_models.MoveTopX0_Y3()
+			moveDir := g_m.MoveTopX0_Y3()
 			if game_srv.CanMoveTop(app.gameSrv.Player(), moveDir) {
 				app.gameSrv.Player().Move(moveDir)
 			}
 			return app, nil
 		case "a":
-			moveDir := game_models.MoveLeftX3_Y0()
+			moveDir := g_m.MoveLeftX3_Y0()
 			if game_srv.CanMoveLeft(app.gameSrv.Player(), moveDir) {
 				app.gameSrv.Player().Move(moveDir)
 			}
 			return app, nil
 		case "s":
-			moveDir := game_models.MoveBottomX0_Y3()
+			moveDir := g_m.MoveBottomX0_Y3()
 			if game_srv.CanMoveBottom(app.gameSrv.Player(), moveDir, app.injector) {
 				app.gameSrv.Player().Move(moveDir)
 			}
 			return app, nil
 		case "d":
-			moveDir := game_models.MoveRightX3_Y0()
+			moveDir := g_m.MoveRightX3_Y0()
 			if game_srv.CanMoveRight(app.gameSrv.Player(), moveDir, app.injector) {
 				app.gameSrv.Player().Move(moveDir)
 			}

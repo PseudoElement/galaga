@@ -6,6 +6,6 @@ type IAppGameSrv interface {
 	View() string
 	StartGame()
 	EndGame()
-	SpawnPlayer(player game_models.IPlayer)
 	Player() game_models.IPlayer
+	SetPlayer(player game_models.IPlayer)
 }

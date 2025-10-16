@@ -1,6 +1,8 @@
 package game_models
 
-import "github.com/charmbracelet/lipgloss"
+import (
+	"github.com/charmbracelet/lipgloss"
+)
 
 type Coords struct {
 	X int16
@@ -20,6 +22,13 @@ type CellConstructorParams struct {
 	Color  string
 	Coords Coords
 	// CanDamage bool
+}
+
+func CellParams(x, y int16, color string) CellConstructorParams {
+	return CellConstructorParams{
+		Color:  color,
+		Coords: Coords{X: x, Y: y},
+	}
 }
 
 type ICellWithDamage interface {

@@ -12,7 +12,7 @@ type PageGame struct {
 func NewPageGame(injector models.IAppInjector) models.IPage {
 	p := &PageGame{Page: NewPage(injector)}
 
-	injector.GameSrv().SpawnPlayer(player.NewDefaultPlayer(injector))
+	injector.GameSrv().SetPlayer(player.NewDefaultPlayer(injector))
 	injector.GameSrv().StartGame()
 
 	return p

@@ -4,34 +4,40 @@ import (
 	"time"
 
 	"github.com/charmbracelet/lipgloss"
-	game_objects "github.com/pseudoelement/galaga/src/game/game-objects"
-	game_models "github.com/pseudoelement/galaga/src/game/models"
+	g_o "github.com/pseudoelement/galaga/src/game/game-objects"
+	g_m "github.com/pseudoelement/galaga/src/game/models"
 	"github.com/pseudoelement/galaga/src/models"
 	game_srv_styles "github.com/pseudoelement/galaga/src/services/game-service/styles"
+)
+
+const (
+	GAME_LOOP_TICK_DELAY_MS = 20
 )
 
 type AppGameSrv struct {
 	injector models.IAppInjector
 
-	arena       [][]game_models.ICell
-	objectsPool []game_models.IGameObject
-	player      game_models.IPlayer
-	score       int32
-	stop        bool
+	arena          [][]g_m.ICell
+	gameDurationMs int
+	objectsPool    []g_m.IGameObject
+	player         g_m.IPlayer
+	score          int32
+	stop           bool
 }
 
-func NewAppGameSrv(injector models.IAppInjector) models.IAppGameSrv {
+func NewAppGameSrv(injector models.IAppInjector, player g_m.IPlayer) models.IAppGameSrv {
 	return &AppGameSrv{
-		injector:    injector,
-		arena:       make([][]game_models.ICell, 0),
-		objectsPool: make([]game_models.IGameObject, 0),
-		score:       0,
-		player:      nil,
-		stop:        false,
+		injector:       injector,
+		arena:          make([][]g_m.ICell, 0),
+		objectsPool:    make([]g_m.IGameObject, 0),
+		score:          0,
+		player:         player,
+		stop:           false,
+		gameDurationMs: 0,
 	}
 }
 
-func (gs *AppGameSrv) Player() game_models.IPlayer {
+func (gs *AppGameSrv) Player() g_m.IPlayer {
 	return gs.player
 }
 
@@ -52,26 +58,15 @@ func (gs *AppGameSrv) View() string {
 
 func (gs *AppGameSrv) StartGame() {
 	// at this point gs.injector.Storage().WindowSize() should be already defined
-	width := gs.injector.Storage().WindowSize().Width
-	height := gs.injector.Storage().WindowSize().Height
-	// first row leave for header with HP and score
-	rowsCount := height - 1
-	for heightCount := range rowsCount { // y
-		arenaRow := make([]game_models.ICell, 0, width)
+	width, height := gs.getArenaSize()
+	for heightCount := range height { // y
+		arenaRow := make([]g_m.ICell, 0, width)
 		for widthCount := range width { // x
-			if (heightCount+widthCount)%2 == 0 {
-				arenaRow = append(arenaRow, game_objects.NewCell(cellParams(
-					int16(widthCount),
-					int16(heightCount),
-					game_srv_styles.DarkBgColor,
-				)))
-			} else {
-				arenaRow = append(arenaRow, game_objects.NewCell(cellParams(
-					int16(widthCount),
-					int16(heightCount),
-					game_srv_styles.SemiDarkBgColor,
-				)))
-			}
+			arenaRow = append(arenaRow, g_o.NewCell(cellParams(
+				int16(widthCount),
+				int16(heightCount),
+				game_srv_styles.BlackColor,
+			)))
 		}
 
 		gs.arena = append(gs.arena, arenaRow)
@@ -88,34 +83,97 @@ func (gs *AppGameSrv) StartGame() {
 
 func (gs *AppGameSrv) EndGame() {
 	gs.player = nil
-	gs.objectsPool = make([]game_models.IGameObject, 0)
-	gs.arena = make([][]game_models.ICell, 0)
+	gs.objectsPool = make([]g_m.IGameObject, 0)
+	gs.arena = make([][]g_m.ICell, 0)
 	gs.stop = true
+	gs.gameDurationMs = 0
 	gs.resetScore()
 }
 
-func (gs *AppGameSrv) SpawnPlayer(player game_models.IPlayer) {
+func (gs *AppGameSrv) SetPlayer(player g_m.IPlayer) {
 	gs.player = player
 }
 
 func (gs *AppGameSrv) runLoop() {
+	x, y := gs.getArenaSize()
 	for !gs.stop {
-		time.Sleep(16 * time.Millisecond)
+		time.Sleep(GAME_LOOP_TICK_DELAY_MS * time.Millisecond)
 		gs.injector.TeaProgram().Send(models.UpdateTrigger{})
+		gs.gameDurationMs += GAME_LOOP_TICK_DELAY_MS
 
-		for _, cell := range gs.player.PrevCells() {
-			coords := cell.Coords()
-			if (coords.X+coords.Y)%2 == 0 {
-				gs.arena[coords.Y][coords.X] = game_objects.NewCell(cellParams(coords.X, coords.Y, game_srv_styles.DarkBgColor))
-			} else {
-				gs.arena[coords.Y][coords.X] = game_objects.NewCell(cellParams(coords.X, coords.Y, game_srv_styles.SemiDarkBgColor))
+		gs.clearPrevCellsOfObjectsOnTick()
+		gs.drawNewCellsOfObjectsOnTick()
+
+		gs.handleShot()
+
+		for _, object := range gs.objectsPool {
+			switch obj := object.(type) {
+			case g_m.IBullet:
+				gs.handleBulletBehaviourOnTick(obj)
 			}
 		}
 
-		for _, cell := range gs.player.Cells() {
-			coords := cell.Coords()
-			gs.arena[coords.Y][coords.X] = cell
+		// destroy objects out of arena
+		for _, object := range gs.objectsPool {
+			if isObjectOutOfArena(object, x, y) {
+				object.Destroy()
+			}
 		}
+	}
+}
+
+func (gs *AppGameSrv) clearPrevCellsOfObjectsOnTick() {
+	updatedObjectsPool := make([]g_m.IGameObject, 0)
+	for _, obj := range gs.objectsPool {
+		if !obj.Destroyed() {
+			updatedObjectsPool = append(updatedObjectsPool, obj)
+		}
+		for _, cell := range obj.PrevCells() {
+			coords := cell.Coords()
+			gs.arena[coords.Y][coords.X] = g_o.NewCell(cellParams(coords.X, coords.Y, game_srv_styles.BlackColor))
+		}
+	}
+
+	gs.objectsPool = updatedObjectsPool
+
+	for _, cell := range gs.player.PrevCells() {
+		coords := cell.Coords()
+		gs.arena[coords.Y][coords.X] = g_o.NewCell(cellParams(coords.X, coords.Y, game_srv_styles.BlackColor))
+	}
+}
+
+func (gs *AppGameSrv) drawNewCellsOfObjectsOnTick() {
+	width, height := gs.getArenaSize()
+	for _, obj := range gs.objectsPool {
+		for _, cell := range obj.Cells() {
+			coords := cell.Coords()
+			if !isCellOutOfArena(cell, width, height) {
+				gs.arena[coords.Y][coords.X] = cell
+			}
+		}
+	}
+	for _, cell := range gs.player.Cells() {
+		coords := cell.Coords()
+		gs.arena[coords.Y][coords.X] = cell
+	}
+}
+
+func (gs *AppGameSrv) handleShot() {
+	shotLatency := GAME_LOOP_TICK_DELAY_MS * 8
+	if gs.gameDurationMs%shotLatency == 0 {
+		bullets := gs.player.Shot()
+		bulletGameObjects := make([]g_m.IGameObject, len(bullets))
+		for i, bullet := range bullets {
+			bulletGameObjects[i] = bullet
+		}
+
+		gs.objectsPool = append(gs.objectsPool, bulletGameObjects...)
+	}
+}
+
+func (gs *AppGameSrv) handleBulletBehaviourOnTick(bullet g_m.IBullet) {
+	if gs.gameDurationMs%bullet.MovementDelay(GAME_LOOP_TICK_DELAY_MS) == 0 {
+		bullet.Move(g_m.MoveTopX0_Y1())
 	}
 }
 
@@ -125,4 +183,10 @@ func (gs *AppGameSrv) increaseScore() {
 
 func (gs *AppGameSrv) resetScore() {
 	gs.score = 0
+}
+
+func (gs *AppGameSrv) getArenaSize() (x, y int) {
+	windowSize := gs.injector.Storage().WindowSize()
+	// first row leave for header with HP and score
+	return windowSize.Width, windowSize.Height - 1
 }
