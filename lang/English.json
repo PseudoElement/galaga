@@ -16,7 +16,7 @@
         },
         "text": {
             "rules": "Game rules \nYour main goal is to protect yourself and live as much as possible. \nYou can kill them or just dodge shots. \nAvoid bombs(TNT), they blast with range 4*4 when you shot them. \nGood luck.",
-            "controls": "Game controls \n* Move top - W \n* Move down - S \n* Move left - A \n* Move right - D \n* Quit game - Escape or Enter"
+            "controls": "Game controls \n* Move top - W \n* Move down - S \n* Move left - A \n* Move right - D \n* Quit game - Escape"
         }
     }
 }

@@ -1,6 +1,7 @@
 package enemy
 
 import (
+	g_c "github.com/pseudoelement/galaga/src/game/game-constants"
 	g_o "github.com/pseudoelement/galaga/src/game/game-objects"
 	g_m "github.com/pseudoelement/galaga/src/game/models"
 )
@@ -9,12 +10,12 @@ type OctopusEnemy struct {
 	*Enemy
 }
 
-func NewOctopusEnemy(x, y int16) g_m.IEnemyShooter {
+func NewOctopusEnemy(x, y int16, health int16) g_m.IEnemy {
 	cells := []g_m.ICell{
 		//1st
 		g_o.NewCell(g_m.CellParams(x, y, "#ffffffff")),
 		g_o.NewCell(g_m.CellParams(x+1, y, "#ffffffff")),
-		g_o.NewCell(g_m.CellParams(x+2, y, "#8105bbff")),
+		g_o.NewCell(g_m.CellParams(x+2, y, "#ffffffff")),
 		g_o.NewCell(g_m.CellParams(x+3, y, "#ffffffff")),
 		g_o.NewCell(g_m.CellParams(x+4, y, "#ffffffff")),
 		//2nd
@@ -44,19 +45,22 @@ func NewOctopusEnemy(x, y int16) g_m.IEnemyShooter {
 		g_o.NewCell(g_m.CellParams(x+2, y+5, "#ffffffff")),
 		g_o.NewCell(g_m.CellParams(x+4, y+5, "#ffffffff")),
 	}
+	movementPattern := []g_m.MoveDir{
+		g_m.MoveLeftBottomX1_Y1(),
+		g_m.MoveRightBottomX1_Y1(),
+	}
 
 	return &OctopusEnemy{
-		Enemy: NewEnemy(10, cells),
+		Enemy: NewEnemy(health, cells, movementPattern),
 	}
 }
 
-func (dp *OctopusEnemy) MovementDelay(tickMs int) int {
+func (e *OctopusEnemy) Name() string {
+	return g_c.OCTOPUS
+}
+
+func (e *OctopusEnemy) MovementDelay(tickMs int) int {
 	return tickMs * 8
 }
 
-func (dp *OctopusEnemy) Shot() []g_m.IBullet {
-	return []g_m.IBullet{}
-}
-
 var _ g_m.IEnemy = (*OctopusEnemy)(nil)
-var _ g_m.IEnemyShooter = (*OctopusEnemy)(nil)

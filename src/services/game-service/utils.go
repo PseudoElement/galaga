@@ -34,8 +34,8 @@ func isCellOutOfArena(cell game_models.ICell, arenaWidth, arenaHeight int) bool 
 	coords := cell.Coords()
 	if coords.X < 0 ||
 		coords.Y < 0 ||
-		coords.X > int16(arenaWidth) ||
-		coords.Y > int16(arenaHeight) {
+		coords.X > int16(arenaWidth-1) ||
+		coords.Y > int16(arenaHeight-1) {
 		return true
 	}
 	return false
