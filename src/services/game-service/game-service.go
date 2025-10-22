@@ -5,9 +5,7 @@ import (
 	"time"
 
 	"github.com/charmbracelet/lipgloss"
-	"github.com/pseudoelement/galaga/src/game/enemy"
 	g_c "github.com/pseudoelement/galaga/src/game/game-constants"
-	g_o "github.com/pseudoelement/galaga/src/game/game-objects"
 	g_m "github.com/pseudoelement/galaga/src/game/models"
 	"github.com/pseudoelement/galaga/src/models"
 	game_srv_styles "github.com/pseudoelement/galaga/src/services/game-service/styles"
@@ -18,8 +16,7 @@ const (
 )
 
 type AppGameSrv struct {
-	injector     models.IAppInjector
-	enemyFactory g_m.IEnemyFactory
+	injector models.IAppInjector
 
 	arena          [][]g_m.ICell
 	gameDurationMs int
@@ -31,8 +28,7 @@ type AppGameSrv struct {
 
 func NewAppGameSrv(injector models.IAppInjector, player g_m.IPlayer) models.IAppGameSrv {
 	return &AppGameSrv{
-		injector:     injector,
-		enemyFactory: enemy.NewEnemyFactory(injector),
+		injector: injector,
 
 		arena:          make([][]g_m.ICell, 0),
 		objectsPool:    make([]g_m.IGameObject, 0),
@@ -71,7 +67,7 @@ func (gs *AppGameSrv) StartGame() {
 	for heightCount := range height { // y
 		arenaRow := make([]g_m.ICell, 0, width)
 		for widthCount := range width { // x
-			arenaRow = append(arenaRow, g_o.NewCell(cellParams(
+			arenaRow = append(arenaRow, g_m.NewCell(cellParams(
 				int16(widthCount),
 				int16(heightCount),
 				game_srv_styles.BlackColor,
@@ -114,7 +110,9 @@ func (gs *AppGameSrv) runLoop() {
 		gs.drawNewCellsOfObjectsOnTick()
 
 		gs.handleEnemySpawn()
+		gs.handleBoostSpawn()
 		gs.handleShot()
+		gs.handleCollision()
 
 		for _, object := range gs.objectsPool {
 			switch obj := object.(type) {
@@ -122,6 +120,8 @@ func (gs *AppGameSrv) runLoop() {
 				gs.handleBulletBehaviourOnTick(obj)
 			case g_m.IEnemy:
 				gs.handleEnemyBehaviourOnTick(obj)
+			case g_m.IBoost:
+				gs.handleBoostBehaviourOnTick(obj)
 			}
 		}
 
@@ -146,7 +146,7 @@ func (gs *AppGameSrv) clearPrevCellsOfObjectsOnTick() {
 		for _, cell := range obj.PrevCells() {
 			coords := cell.Coords()
 			if !isCellOutOfArena(cell, width, height) {
-				gs.arena[coords.Y][coords.X] = g_o.NewCell(cellParams(coords.X, coords.Y, game_srv_styles.BlackColor))
+				gs.arena[coords.Y][coords.X] = g_m.NewCell(cellParams(coords.X, coords.Y, game_srv_styles.BlackColor))
 			}
 		}
 	}
@@ -155,7 +155,7 @@ func (gs *AppGameSrv) clearPrevCellsOfObjectsOnTick() {
 
 	for _, cell := range gs.player.PrevCells() {
 		coords := cell.Coords()
-		gs.arena[coords.Y][coords.X] = g_o.NewCell(cellParams(coords.X, coords.Y, game_srv_styles.BlackColor))
+		gs.arena[coords.Y][coords.X] = g_m.NewCell(cellParams(coords.X, coords.Y, game_srv_styles.BlackColor))
 	}
 }
 
@@ -175,13 +175,34 @@ func (gs *AppGameSrv) drawNewCellsOfObjectsOnTick() {
 	}
 }
 
+// @TODO implement
+func (gs *AppGameSrv) handleCollision() {
+	for _, obj := range gs.objectsPool {
+		for _, cell := range obj.Cells() {
+			for _, playerCell := range gs.player.Cells() {
+				if cell.Coords() == playerCell.Coords() {
+					// ... do something
+				}
+			}
+		}
+	}
+}
+
 func (gs *AppGameSrv) handleEnemySpawn() {
 	spawnLatency := GAME_LOOP_TICK_DELAY_MS * 150
 	if gs.gameDurationMs%spawnLatency == 0 {
-		spawnedEnemy := gs.enemyFactory.SpawnEnemy(g_c.EASY)
+		spawnedEnemy := gs.injector.Factories().EnemyFactory(g_c.EASY)
 		gs.objectsPool = append(gs.objectsPool, spawnedEnemy)
 
 		gs.increaseScore()
+	}
+}
+
+func (gs *AppGameSrv) handleBoostSpawn() {
+	spawnLatency := GAME_LOOP_TICK_DELAY_MS * 150
+	if gs.gameDurationMs%spawnLatency == 0 {
+		spawnedEnemy := gs.injector.Factories().BoostFactory(g_c.EASY)
+		gs.objectsPool = append(gs.objectsPool, spawnedEnemy)
 	}
 }
 
@@ -214,7 +235,6 @@ func (gs *AppGameSrv) handleEnemyBehaviourOnTick(enemy g_m.IEnemy) {
 	}
 }
 
-// @FIX handle bullets from enemy
 func (gs *AppGameSrv) handleBulletBehaviourOnTick(bullet g_m.IBullet) {
 	delay := bullet.MovementDelay(GAME_LOOP_TICK_DELAY_MS)
 	if gs.gameDurationMs%delay == 0 {
@@ -223,6 +243,13 @@ func (gs *AppGameSrv) handleBulletBehaviourOnTick(bullet g_m.IBullet) {
 		} else {
 			bullet.Move(g_m.MoveBottomX0_Y1())
 		}
+	}
+}
+
+func (gs *AppGameSrv) handleBoostBehaviourOnTick(boost g_m.IBoost) {
+	delay := boost.MovementDelay(GAME_LOOP_TICK_DELAY_MS)
+	if gs.gameDurationMs%delay == 0 {
+		boost.Move(g_m.MoveBottomX0_Y1())
 	}
 }
 

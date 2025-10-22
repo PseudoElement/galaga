@@ -7,4 +7,5 @@ type IAppInjector interface {
 	LanguageSrv() IAppLanguageSrv
 	GameSrv() IAppGameSrv
 	TeaProgram() *tea.Program
+	Factories() IAppFactories
 }

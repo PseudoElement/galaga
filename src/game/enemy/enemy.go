@@ -1,12 +1,11 @@
 package enemy
 
 import (
-	g_o "github.com/pseudoelement/galaga/src/game/game-objects"
 	g_m "github.com/pseudoelement/galaga/src/game/models"
 )
 
 type Enemy struct {
-	*g_o.GameObject
+	*g_m.GameObject
 
 	health          int16
 	movementPattern []g_m.MoveDir
@@ -15,7 +14,7 @@ type Enemy struct {
 
 func NewEnemy(health int16, cells []g_m.ICell, movementPattern []g_m.MoveDir) *Enemy {
 	return &Enemy{
-		GameObject:      g_o.NewGameObject(cells),
+		GameObject:      g_m.NewGameObject(cells),
 		health:          health,
 		movementPattern: movementPattern,
 	}

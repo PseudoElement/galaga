@@ -1,46 +1,38 @@
 package player
 
 import (
-	"math"
-
-	g_o "github.com/pseudoelement/galaga/src/game/game-objects"
 	game_objects "github.com/pseudoelement/galaga/src/game/game-objects"
 	g_m "github.com/pseudoelement/galaga/src/game/models"
 	"github.com/pseudoelement/galaga/src/models"
 )
 
 type DefaultPlayer struct {
-	*g_o.GameObject
+	*g_m.GameObject
 
 	injector models.IAppInjector
+	health   int16
 }
 
-func NewDefaultPlayer(injector models.IAppInjector) *DefaultPlayer {
-	width := injector.Storage().WindowSize().Width
-	height := injector.Storage().WindowSize().Height
-
-	playerTopY := int16(height - 5)
-	playerLeftX := int16(math.Floor(float64(width) / 2))
-
+func NewDefaultPlayer(coords g_m.Coords, injector models.IAppInjector) *DefaultPlayer {
 	cells := []g_m.ICell{
 		// 1st
-		g_o.NewCell(g_m.CellParams(playerLeftX+3, playerTopY, "#eb1eda")),
+		g_m.NewCell(g_m.CellParams(coords.X+3, coords.Y, "#eb1eda", "")),
 		// 2nd
-		g_o.NewCell(g_m.CellParams(playerLeftX+3, playerTopY+1, "#eb1eda")),
+		g_m.NewCell(g_m.CellParams(coords.X+3, coords.Y+1, "#eb1eda", "")),
 		// 3th
-		g_o.NewCell(g_m.CellParams(playerLeftX+3, playerTopY+2, "#eb1eda")),
+		g_m.NewCell(g_m.CellParams(coords.X+3, coords.Y+2, "#eb1eda", "")),
 		// 4th
-		g_o.NewCell(g_m.CellParams(playerLeftX, playerTopY+3, "#eb1eda")),
-		g_o.NewCell(g_m.CellParams(playerLeftX+1, playerTopY+3, "#eb1eda")),
-		g_o.NewCell(g_m.CellParams(playerLeftX+2, playerTopY+3, "#eb1eda")),
-		g_o.NewCell(g_m.CellParams(playerLeftX+3, playerTopY+3, "#eb1eda")),
-		g_o.NewCell(g_m.CellParams(playerLeftX+4, playerTopY+3, "#eb1eda")),
-		g_o.NewCell(g_m.CellParams(playerLeftX+5, playerTopY+3, "#eb1eda")),
-		g_o.NewCell(g_m.CellParams(playerLeftX+6, playerTopY+3, "#eb1eda")),
+		g_m.NewCell(g_m.CellParams(coords.X, coords.Y+3, "#eb1eda", "")),
+		g_m.NewCell(g_m.CellParams(coords.X+1, coords.Y+3, "#eb1eda", "")),
+		g_m.NewCell(g_m.CellParams(coords.X+2, coords.Y+3, "#eb1eda", "")),
+		g_m.NewCell(g_m.CellParams(coords.X+3, coords.Y+3, "#eb1eda", "")),
+		g_m.NewCell(g_m.CellParams(coords.X+4, coords.Y+3, "#eb1eda", "")),
+		g_m.NewCell(g_m.CellParams(coords.X+5, coords.Y+3, "#eb1eda", "")),
+		g_m.NewCell(g_m.CellParams(coords.X+6, coords.Y+3, "#eb1eda", "")),
 	}
 
 	return &DefaultPlayer{
-		GameObject: g_o.NewGameObject(cells),
+		GameObject: g_m.NewGameObject(cells),
 		injector:   injector,
 	}
 }
@@ -53,14 +45,18 @@ func (dp *DefaultPlayer) Shot() []g_m.IBullet {
 	return []g_m.IBullet{bullet}
 }
 
-func (dp *DefaultPlayer) TakeBoost(boostItem g_m.BoostItem) {}
+func (dp *DefaultPlayer) TakeBoost(boostItem g_m.IBoost) {}
 
 func (dp *DefaultPlayer) Health() int16 {
-	return 1
+	return dp.health
 }
 
-func (dp *DefaultPlayer) GetHeal(plusHealthAmount int16) {}
+func (dp *DefaultPlayer) GetHeal(plusHealthAmount int16) {
+	dp.health += plusHealthAmount
+}
 
-func (dp *DefaultPlayer) GetDamage(minusHealthAmount int16) {}
+func (dp *DefaultPlayer) GetDamage(minusHealthAmount int16) {
+	dp.health -= minusHealthAmount
+}
 
 var _ g_m.IPlayer = (*DefaultPlayer)(nil)

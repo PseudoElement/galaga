@@ -1,40 +1,64 @@
 package game_models
 
 import (
+	"fmt"
+
 	"github.com/charmbracelet/lipgloss"
 )
 
-type Coords struct {
-	X int16
-	Y int16
+type Cell struct {
+	color     string
+	style     lipgloss.Style
+	coords    Coords
+	destroyed bool
 }
 
-type ICell interface {
-	IDestroyable
-	Color() string
-	SetColor(color string)
-	Coords() Coords
-	SetCoords(coords Coords)
-	Style() lipgloss.Style
-}
+func NewCell(params CellConstructorParams) *Cell {
+	style := lipgloss.NewStyle().
+		Height(1).
+		Width(1).
+		Background(lipgloss.Color(params.Color)).
+		SetString(params.Text)
 
-type CellConstructorParams struct {
-	/* hex */
-	Color  string
-	Coords Coords
-	// CanDamage bool
-}
-
-func CellParams(x, y int16, color string) CellConstructorParams {
-	return CellConstructorParams{
-		Color:  color,
-		Coords: Coords{X: x, Y: y},
+	return &Cell{
+		color:     params.Color,
+		coords:    params.Coords,
+		style:     style,
+		destroyed: false,
 	}
 }
 
-type ICellWithDamage interface {
-	ICell
-	CanDamage() bool
-	Damage(player IPlayer)
-	SetDamageCount(damageCount int16)
+func (c *Cell) Style() lipgloss.Style {
+	return c.style
 }
+
+func (c *Cell) SetStyle(newStyle lipgloss.Style) {
+	c.style = newStyle
+}
+
+func (c *Cell) Color() string {
+	r, g, b, _ := c.style.GetBackground().RGBA()
+	return fmt.Sprintf("#%02x%02x%02x", r, g, b)
+}
+
+func (c *Cell) SetColor(color string) {
+	c.style = c.style.Background(lipgloss.Color(color))
+}
+
+func (c *Cell) Coords() Coords {
+	return c.coords
+}
+
+func (c *Cell) SetCoords(coords Coords) {
+	c.coords = coords
+}
+
+func (obj *Cell) Destroy() {
+	obj.destroyed = true
+}
+
+func (obj *Cell) Destroyed() bool {
+	return obj.destroyed
+}
+
+var _ ICell = (*Cell)(nil)

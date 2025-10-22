@@ -24,6 +24,9 @@ func NewApp() *tea.Program {
 	appStorage := storage.NewAppStorage()
 	injector.SetStorage(appStorage)
 
+	factories := NewAppFactories(injector)
+	injector.SetFactories(factories)
+
 	appLanguageSrv := language_srv.NewAppLanguageSrv(appStorage)
 	injector.SetLanguageSrv(appLanguageSrv)
 

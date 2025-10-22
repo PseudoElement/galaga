@@ -3,12 +3,12 @@ package game_objects
 import g_m "github.com/pseudoelement/galaga/src/game/models"
 
 type EnemyBullet struct {
-	*Bullet
+	*g_m.Bullet
 }
 
 func NewEnemyBullet(coords g_m.Coords, color string) *EnemyBullet {
 	return &EnemyBullet{
-		Bullet: NewBullet(coords, color),
+		Bullet: g_m.NewBullet(coords, color),
 	}
 }
 

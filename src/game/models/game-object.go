@@ -1,71 +1,68 @@
 package game_models
 
-type IGameObject interface {
-	IDestroyable
-	IMoveable
-	Cells() []ICell
-	/* use to get position before move and redraw bg without rerendering whole arena */
-	PrevCells() []ICell
+type GameObject struct {
+	cells       []ICell
+	prevCells   []ICell
+	prevMoveDir MoveDir
 }
 
-type IGameObjectWithHP interface {
-	IGameObject
-	IHealable
-	IDamageable
+func NewGameObject(cells []ICell) *GameObject {
+	// Create deep copies of each cell
+	prevCells := make([]ICell, len(cells))
+	for i, cell := range cells {
+		// Create a new cell with the same properties
+		prevCells[i] = NewCell(CellConstructorParams{
+			Color:  cell.Color(),
+			Coords: cell.Coords(),
+		})
+	}
+
+	return &GameObject{
+		cells:       cells,
+		prevCells:   prevCells,
+		prevMoveDir: MoveDir{X: 0, Y: 0},
+	}
 }
 
-type IMoveable interface {
-	Move(dir MoveDir)
-	PrevMoveDir() MoveDir
+func (obj *GameObject) Cells() []ICell {
+	return obj.cells
 }
 
-type IAutoMoveable interface {
-	IMoveable
-	MovementDelay(tickMs int) int
+func (obj *GameObject) PrevCells() []ICell {
+	return obj.prevCells
 }
 
-type IDestroyable interface {
-	Destroy()
-	Destroyed() bool
+func (obj *GameObject) PrevMoveDir() MoveDir {
+	return obj.prevMoveDir
 }
 
-type IShooter interface {
-	Shot() []IBullet
+func (obj *GameObject) Move(dir MoveDir) {
+	obj.prevMoveDir = dir
+	for idx, cell := range obj.cells {
+		prevCoords := cell.Coords()
+		prevCellState := obj.prevCells[idx]
+		prevCellState.SetCoords(prevCoords)
+
+		cell.SetCoords(Coords{
+			X: prevCoords.X + dir.X,
+			Y: prevCoords.Y + dir.Y,
+		})
+	}
 }
 
-type IHealable interface {
-	Health() int16
-	GetHeal(plusHealthAmount int16)
+func (obj *GameObject) Destroy() {
+	for _, cell := range obj.cells {
+		cell.Destroy()
+	}
 }
 
-type IDamageable interface {
-	GetDamage(minusHealthAmount int16)
+func (obj *GameObject) Destroyed() bool {
+	for _, cell := range obj.cells {
+		if !cell.Destroyed() {
+			return false
+		}
+	}
+	return true
 }
 
-// ////////////////////////////////////////////////////////////////////////////////////////////////////////////
-type MoveDir struct {
-	X int16
-	Y int16
-}
-
-func MoveTopX0_Y1() MoveDir { return MoveDir{X: 0, Y: -1} }
-
-func MoveBottomX0_Y1() MoveDir { return MoveDir{X: 0, Y: 1} }
-
-func MoveLeftX1_Y0() MoveDir { return MoveDir{X: -1, Y: 0} }
-
-func MoveRightX1_Y0() MoveDir { return MoveDir{X: 1, Y: 0} }
-
-func MoveTopX0_Y3() MoveDir { return MoveDir{X: 0, Y: -3} }
-
-func MoveBottomX0_Y3() MoveDir { return MoveDir{X: 0, Y: 3} }
-
-func MoveLeftX3_Y0() MoveDir { return MoveDir{X: -5, Y: 0} }
-
-func MoveRightX3_Y0() MoveDir { return MoveDir{X: 5, Y: 0} }
-
-func MoveLeftBottomX1_Y1() MoveDir { return MoveDir{X: -1, Y: 1} }
-
-func MoveRightBottomX1_Y1() MoveDir { return MoveDir{X: 1, Y: 1} }
-
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+var _ IGameObject = (*GameObject)(nil)

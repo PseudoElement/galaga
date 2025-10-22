@@ -1,15 +1,15 @@
 package game_objects
 
-import game_models "github.com/pseudoelement/galaga/src/game/models"
+import g_m "github.com/pseudoelement/galaga/src/game/models"
 
 type CellWithDamage struct {
-	*Cell
+	*g_m.Cell
 	damageCount int16
 }
 
-func NewCellWithDamage(params game_models.CellConstructorParams) *CellWithDamage {
+func NewCellWithDamage(params g_m.CellConstructorParams) *CellWithDamage {
 	return &CellWithDamage{
-		Cell: NewCell(params),
+		Cell: g_m.NewCell(params),
 	}
 }
 
@@ -17,7 +17,7 @@ func (c *CellWithDamage) CanDamage() bool {
 	return c.damageCount > 0
 }
 
-func (c *CellWithDamage) Damage(player game_models.IPlayer) {
+func (c *CellWithDamage) Damage(player g_m.IPlayer) {
 	player.GetDamage(c.damageCount)
 }
 
@@ -25,4 +25,4 @@ func (c *CellWithDamage) SetDamageCount(damageCount int16) {
 	c.damageCount = damageCount
 }
 
-var _ game_models.ICellWithDamage = (*CellWithDamage)(nil)
+var _ g_m.ICellWithDamage = (*CellWithDamage)(nil)

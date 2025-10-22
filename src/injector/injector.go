@@ -10,11 +10,20 @@ type AppInjector struct {
 	view        models.IAppView
 	languageSrv models.IAppLanguageSrv
 	gameSrv     models.IAppGameSrv
+	factories   models.IAppFactories
 	teaProgram  *tea.Program
 }
 
 func NewAppInjector() *AppInjector {
 	return &AppInjector{}
+}
+
+func (i *AppInjector) Factories() models.IAppFactories {
+	return i.factories
+}
+
+func (i *AppInjector) SetFactories(factories models.IAppFactories) {
+	i.factories = factories
 }
 
 func (i *AppInjector) Storage() models.IAppStorage {

@@ -2,7 +2,6 @@ package enemy
 
 import (
 	g_c "github.com/pseudoelement/galaga/src/game/game-constants"
-	g_o "github.com/pseudoelement/galaga/src/game/game-objects"
 	g_m "github.com/pseudoelement/galaga/src/game/models"
 )
 
@@ -13,37 +12,37 @@ type OctopusEnemy struct {
 func NewOctopusEnemy(x, y int16, health int16) g_m.IEnemy {
 	cells := []g_m.ICell{
 		//1st
-		g_o.NewCell(g_m.CellParams(x, y, "#ffffffff")),
-		g_o.NewCell(g_m.CellParams(x+1, y, "#ffffffff")),
-		g_o.NewCell(g_m.CellParams(x+2, y, "#ffffffff")),
-		g_o.NewCell(g_m.CellParams(x+3, y, "#ffffffff")),
-		g_o.NewCell(g_m.CellParams(x+4, y, "#ffffffff")),
+		g_m.NewCell(g_m.CellParams(x, y, "#ffffffff", "")),
+		g_m.NewCell(g_m.CellParams(x+1, y, "#ffffffff", "")),
+		g_m.NewCell(g_m.CellParams(x+2, y, "#ffffffff", "")),
+		g_m.NewCell(g_m.CellParams(x+3, y, "#ffffffff", "")),
+		g_m.NewCell(g_m.CellParams(x+4, y, "#ffffffff", "")),
 		//2nd
-		g_o.NewCell(g_m.CellParams(x, y+1, "#ffffffff")),
-		g_o.NewCell(g_m.CellParams(x+1, y+1, "#ffffffff")),
-		g_o.NewCell(g_m.CellParams(x+2, y+1, "#ffffffff")),
-		g_o.NewCell(g_m.CellParams(x+3, y+1, "#ffffffff")),
-		g_o.NewCell(g_m.CellParams(x+4, y+1, "#ffffffff")),
+		g_m.NewCell(g_m.CellParams(x, y+1, "#ffffffff", "")),
+		g_m.NewCell(g_m.CellParams(x+1, y+1, "#ffffffff", "")),
+		g_m.NewCell(g_m.CellParams(x+2, y+1, "#ffffffff", "")),
+		g_m.NewCell(g_m.CellParams(x+3, y+1, "#ffffffff", "")),
+		g_m.NewCell(g_m.CellParams(x+4, y+1, "#ffffffff", "")),
 		//3th
-		g_o.NewCell(g_m.CellParams(x, y+2, "#ffffffff")),
-		g_o.NewCell(g_m.CellParams(x+1, y+2, "#ffffffff")),
-		g_o.NewCell(g_m.CellParams(x+2, y+2, "#ffffffff")),
-		g_o.NewCell(g_m.CellParams(x+3, y+2, "#ffffffff")),
-		g_o.NewCell(g_m.CellParams(x+4, y+2, "#ffffffff")),
+		g_m.NewCell(g_m.CellParams(x, y+2, "#ffffffff", "")),
+		g_m.NewCell(g_m.CellParams(x+1, y+2, "#ffffffff", "")),
+		g_m.NewCell(g_m.CellParams(x+2, y+2, "#ffffffff", "")),
+		g_m.NewCell(g_m.CellParams(x+3, y+2, "#ffffffff", "")),
+		g_m.NewCell(g_m.CellParams(x+4, y+2, "#ffffffff", "")),
 		//4th
-		g_o.NewCell(g_m.CellParams(x, y+3, "#ffffffff")),
-		g_o.NewCell(g_m.CellParams(x+1, y+3, "#ffffffff")),
-		g_o.NewCell(g_m.CellParams(x+2, y+3, "#ffffffff")),
-		g_o.NewCell(g_m.CellParams(x+3, y+3, "#ffffffff")),
-		g_o.NewCell(g_m.CellParams(x+4, y+3, "#ffffffff")),
+		g_m.NewCell(g_m.CellParams(x, y+3, "#ffffffff", "")),
+		g_m.NewCell(g_m.CellParams(x+1, y+3, "#ffffffff", "")),
+		g_m.NewCell(g_m.CellParams(x+2, y+3, "#ffffffff", "")),
+		g_m.NewCell(g_m.CellParams(x+3, y+3, "#ffffffff", "")),
+		g_m.NewCell(g_m.CellParams(x+4, y+3, "#ffffffff", "")),
 		//5th
-		g_o.NewCell(g_m.CellParams(x, y+4, "#ffffffff")),
-		g_o.NewCell(g_m.CellParams(x+2, y+4, "#ffffffff")),
-		g_o.NewCell(g_m.CellParams(x+4, y+4, "#ffffffff")),
+		g_m.NewCell(g_m.CellParams(x, y+4, "#ffffffff", "")),
+		g_m.NewCell(g_m.CellParams(x+2, y+4, "#ffffffff", "")),
+		g_m.NewCell(g_m.CellParams(x+4, y+4, "#ffffffff", "")),
 		//6th
-		g_o.NewCell(g_m.CellParams(x, y+5, "#ffffffff")),
-		g_o.NewCell(g_m.CellParams(x+2, y+5, "#ffffffff")),
-		g_o.NewCell(g_m.CellParams(x+4, y+5, "#ffffffff")),
+		g_m.NewCell(g_m.CellParams(x, y+5, "#ffffffff", "")),
+		g_m.NewCell(g_m.CellParams(x+2, y+5, "#ffffffff", "")),
+		g_m.NewCell(g_m.CellParams(x+4, y+5, "#ffffffff", "")),
 	}
 	movementPattern := []g_m.MoveDir{
 		g_m.MoveLeftBottomX1_Y1(),
