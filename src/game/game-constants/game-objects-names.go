@@ -1,10 +1,17 @@
 package game_constants
 
 // enemies
+type EnemyType = string
+
 const (
 	OCTOPUS          = "OctopusEnemy"
 	SMALL_SPACE_SHIP = "SmallSpaceShipEnemy"
 )
+
+var EMEMY_NAMES = [2]EnemyType{
+	OCTOPUS,
+	SMALL_SPACE_SHIP,
+}
 
 // players
 type PlayerType = string

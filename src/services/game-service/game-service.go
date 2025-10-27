@@ -2,10 +2,13 @@ package game_srv
 
 import (
 	"fmt"
+	"os"
+	"strconv"
 	"time"
 
 	"github.com/charmbracelet/lipgloss"
 	g_c "github.com/pseudoelement/galaga/src/game/game-constants"
+	g_o "github.com/pseudoelement/galaga/src/game/game-objects"
 	g_m "github.com/pseudoelement/galaga/src/game/models"
 	"github.com/pseudoelement/galaga/src/models"
 	game_srv_styles "github.com/pseudoelement/galaga/src/services/game-service/styles"
@@ -23,13 +26,13 @@ type AppGameSrv struct {
 	objectsPool    []g_m.IGameObject
 	player         g_m.IPlayer
 	score          int32
+	bestScore      int32
 	stop           bool
 }
 
 func NewAppGameSrv(injector models.IAppInjector, player g_m.IPlayer) models.IAppGameSrv {
-	return &AppGameSrv{
-		injector: injector,
-
+	gameSrv := &AppGameSrv{
+		injector:       injector,
 		arena:          make([][]g_m.ICell, 0),
 		objectsPool:    make([]g_m.IGameObject, 0),
 		score:          0,
@@ -37,6 +40,10 @@ func NewAppGameSrv(injector models.IAppInjector, player g_m.IPlayer) models.IApp
 		stop:           false,
 		gameDurationMs: 0,
 	}
+
+	go gameSrv.loadBestScore()
+
+	return gameSrv
 }
 
 func (gs *AppGameSrv) Player() g_m.IPlayer {
@@ -60,10 +67,12 @@ func (gs *AppGameSrv) View() string {
 	if !gs.IsPlaying() {
 		return ""
 	}
-	hpView := fmt.Sprintf("❤️ %v", gs.player.Health())
-	scoreView := fmt.Sprintf(" Score: %d", gs.score)
 
-	header := lipgloss.JoinHorizontal(lipgloss.Center, hpView, scoreView)
+	hpView := fmt.Sprintf("❤️ %v", gs.player.Health())
+	scoreView := fmt.Sprintf(" %s: %d", gs.injector.LanguageSrv().Translate("game.score"), gs.score)
+	besrScoreView := fmt.Sprintf(" %s: %d", gs.injector.LanguageSrv().Translate("game.bestScore"), gs.bestScore)
+
+	header := lipgloss.JoinHorizontal(lipgloss.Center, hpView, scoreView, besrScoreView)
 	view := lipgloss.JoinVertical(lipgloss.Center, header, arenaView)
 
 	return view
@@ -96,27 +105,25 @@ func (gs *AppGameSrv) StartGame() {
 }
 
 func (gs *AppGameSrv) EndGame() {
+	go gs.injector.TeaProgram().Send(models.EndGameTrigger{})
+	go gs.saveBestScoreIfRecord(gs.score)
+
 	gs.stop = true
 	gs.player = nil
 	gs.objectsPool = make([]g_m.IGameObject, 0)
 	gs.arena = make([][]g_m.ICell, 0)
 	gs.gameDurationMs = 0
-	gs.resetScore()
 
-	gs.injector.TeaProgram().Send(models.EndGameTrigger{})
+	gs.resetScore()
 }
 
 func (gs *AppGameSrv) SetPlayer(player g_m.IPlayer) {
 	if gs.player != nil {
-		var prevPlayerIdx int
-		for idx, obj := range gs.objectsPool {
-			oldPlayer, isPlayer := obj.(g_m.IPlayer)
-			if isPlayer {
-				prevPlayerIdx = idx
-				oldPlayer.Destroy()
+		for _, obj := range gs.objectsPool {
+			if g_o.IsPlayer(obj) {
+				obj.Destroy()
 			}
 		}
-		gs.objectsPool = append(gs.objectsPool[0:prevPlayerIdx], gs.objectsPool[prevPlayerIdx+1:]...)
 	}
 
 	gs.player = player
@@ -211,7 +218,7 @@ func (gs *AppGameSrv) handleCollision() {
 			crossedObject, crossed := objectPoolCellsMap[cell.Coords()]
 			// means 2 objects collided each other in specific cell
 			if crossed {
-				handleCollisionScenarios(currentObj, crossedObject)
+				handleCollisionScenarios(currentObj, crossedObject, gs)
 			} else {
 				objectPoolCellsMap[cell.Coords()] = currentObj
 			}
@@ -224,8 +231,6 @@ func (gs *AppGameSrv) handleEnemySpawn() {
 	if gs.gameDurationMs%spawnLatency == 0 {
 		spawnedEnemy := gs.injector.Factories().EnemyFactory(g_c.EASY)
 		gs.objectsPool = append(gs.objectsPool, spawnedEnemy)
-
-		gs.increaseScore()
 	}
 }
 
@@ -269,12 +274,7 @@ func (gs *AppGameSrv) handleEnemyBehaviourOnTick(enemy g_m.IEnemy) {
 func (gs *AppGameSrv) handleBulletBehaviourOnTick(bullet g_m.IBullet) {
 	delay := bullet.MovementDelay(GAME_LOOP_TICK_DELAY_MS)
 	if gs.gameDurationMs%delay == 0 {
-		isBulletOfPlayer := false
-		for _, playerName := range g_c.PLAYER_NAMES {
-			if playerName == bullet.Owner().Name() {
-				isBulletOfPlayer = true
-			}
-		}
+		isBulletOfPlayer := g_o.IsPlayer(bullet.Owner())
 		if isBulletOfPlayer {
 			bullet.Move(g_m.MoveTopX0_Y1())
 		} else {
@@ -290,12 +290,38 @@ func (gs *AppGameSrv) handleBoostBehaviourOnTick(boost g_m.IBoost) {
 	}
 }
 
-func (gs *AppGameSrv) increaseScore() {
-	gs.score++
+func (gs *AppGameSrv) increaseScore(plusPoints int32) {
+	gs.score += plusPoints
 }
 
 func (gs *AppGameSrv) resetScore() {
 	gs.score = 0
+}
+
+func (gs *AppGameSrv) loadBestScore() {
+	pwd, _ := os.Getwd()
+	path := pwd + "/data" + "/best-score.txt"
+
+	fileBytes, err := os.ReadFile(path)
+	throwOnError(err, "AppGameSrv_loadBestScore_ReadFile")
+
+	bestScore, err := strconv.Atoi(string(fileBytes))
+	throwOnError(err, "AppGameSrv_loadBestScore_Atoi")
+
+	gs.bestScore = int32(bestScore)
+}
+
+func (gs *AppGameSrv) saveBestScoreIfRecord(currentScore int32) {
+	if gs.bestScore < currentScore {
+		gs.bestScore = currentScore
+		newBestScore := strconv.Itoa(int(currentScore))
+
+		pwd, _ := os.Getwd()
+		path := pwd + "/data" + "/best-score.txt"
+
+		err := os.WriteFile(path, []byte(newBestScore), 0777)
+		throwOnError(err, "AppGameSrv_saveBestScoreIfRecord_WriteFile")
+	}
 }
 
 func (gs *AppGameSrv) getArenaSize() (x, y int) {

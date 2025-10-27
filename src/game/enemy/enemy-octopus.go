@@ -58,6 +58,10 @@ func (e *OctopusEnemy) Name() string {
 	return g_c.OCTOPUS
 }
 
+func (e *OctopusEnemy) Price() int32 {
+	return 1
+}
+
 func (e *OctopusEnemy) MovementDelay(tickMs int) int {
 	return tickMs * 8
 }

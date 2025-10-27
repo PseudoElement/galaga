@@ -1,6 +1,10 @@
 package game_srv
 
-import game_models "github.com/pseudoelement/galaga/src/game/models"
+import (
+	"fmt"
+
+	game_models "github.com/pseudoelement/galaga/src/game/models"
+)
 
 func cellParams(x, y int16, color string) game_models.CellConstructorParams {
 	return game_models.CellConstructorParams{
@@ -39,4 +43,11 @@ func isCellOutOfArena(cell game_models.ICell, arenaWidth, arenaHeight int) bool 
 		return true
 	}
 	return false
+}
+
+func throwOnError(err error, tag string) {
+	if err != nil {
+		message := fmt.Sprintf("[%s] error ==> %s", tag, err.Error())
+		panic(message)
+	}
 }

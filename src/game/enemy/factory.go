@@ -11,12 +11,12 @@ import (
 func CreateEnemy(diffLevel g_c.DifficultyLevel, injector models.IAppInjector) g_m.IEnemy {
 	windowSize := injector.Storage().WindowSize()
 
-	x := int16(rand.Intn(windowSize.Width)-5) + 2
+	x := int16(rand.Intn(windowSize.Width)-10) + 5
 	y := int16(-2)
 
 	var health int16
 	if diffLevel == g_c.EASY {
-		health = 1
+		health = 3
 	} else {
 		health = 6
 	}

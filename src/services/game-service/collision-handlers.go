@@ -1,26 +1,38 @@
 package game_srv
 
-import game_models "github.com/pseudoelement/galaga/src/game/models"
+import (
+	g_o "github.com/pseudoelement/galaga/src/game/game-objects"
+	game_models "github.com/pseudoelement/galaga/src/game/models"
+)
 
-func handleCollisionScenarios(obj1 game_models.IGameObject, obj2 game_models.IGameObject) {
-	_checkCollisionPlayerWithEnemy(obj1, obj2)
-	_checkCollisionPlayerWithEnemy(obj2, obj1)
+func handleCollisionScenarios(obj1 game_models.IGameObject, obj2 game_models.IGameObject, gameSrv *AppGameSrv) {
+	_checkCollisionPlayerWithEnemy(obj1, obj2, gameSrv)
+	_checkCollisionPlayerWithEnemy(obj2, obj1, gameSrv)
 
-	_checkCollisionWithBullet(obj1, obj2)
-	_checkCollisionWithBullet(obj2, obj1)
+	_checkCollisionWithBullet(obj1, obj2, gameSrv)
+	_checkCollisionWithBullet(obj2, obj1, gameSrv)
 
 	_checkCollisionWithBoost(obj1, obj2)
 	_checkCollisionWithBoost(obj2, obj1)
 }
 
-func _checkCollisionWithBullet(obj game_models.IGameObject, otherObject game_models.IGameObject) {
+func _checkCollisionWithBullet(obj game_models.IGameObject, otherObject game_models.IGameObject, gameSrv *AppGameSrv) {
 	bulletObject, isObjectBullet := obj.(game_models.IBullet)
-	if isObjectBullet {
-		damageableObject, isDamageable := otherObject.(game_models.IDamageable)
-		// @CHECK if bullet of old player can damage new player (taken boost)
-		doesBulletCrossedItsOwner := bulletObject.Owner() == otherObject
-		if isDamageable && !doesBulletCrossedItsOwner && !bulletObject.Destroyed() {
-			bulletObject.Damage(damageableObject)
+	if isObjectBullet && !bulletObject.Destroyed() {
+		playerObject, isOtherObjPlayer := otherObject.(game_models.IPlayer)
+		enemyObject, isOtherObjEnemy := otherObject.(game_models.IEnemy)
+		// enemy bullet should not damage other enemies
+		if isOtherObjEnemy && !g_o.IsEnemy(bulletObject.Owner()) {
+			bulletObject.Damage(enemyObject)
+			bulletObject.Destroy()
+			if enemyObject.Destroyed() {
+				gameSrv.increaseScore(enemyObject.Price())
+			}
+			return
+		}
+		// player bullet should not damage player
+		if isOtherObjPlayer && !g_o.IsPlayer(bulletObject.Owner()) {
+			bulletObject.Damage(playerObject)
 			bulletObject.Destroy()
 		}
 	}
@@ -28,16 +40,16 @@ func _checkCollisionWithBullet(obj game_models.IGameObject, otherObject game_mod
 
 func _checkCollisionWithBoost(obj game_models.IGameObject, otherObject game_models.IGameObject) {
 	boostObject, isObjectBoost := obj.(game_models.IBoost)
-	if isObjectBoost {
+	if isObjectBoost && !boostObject.Destroyed() {
 		player, isPlayer := otherObject.(game_models.IPlayer)
-		if isPlayer && !boostObject.Destroyed() {
+		if isPlayer {
 			boostObject.Boost(player)
 			boostObject.Destroy()
 		}
 	}
 }
 
-func _checkCollisionPlayerWithEnemy(obj game_models.IGameObject, otherObject game_models.IGameObject) {
+func _checkCollisionPlayerWithEnemy(obj game_models.IGameObject, otherObject game_models.IGameObject, gameSrv *AppGameSrv) {
 	enemyObject, isObjectEnemy := obj.(game_models.IEnemy)
 	if isObjectEnemy {
 		player, isPlayer := otherObject.(game_models.IPlayer)

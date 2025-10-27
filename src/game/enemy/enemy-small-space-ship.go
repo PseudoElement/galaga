@@ -45,6 +45,10 @@ func (e *SmallSpaceShipEnemy) Name() string {
 	return g_c.SMALL_SPACE_SHIP
 }
 
+func (e *SmallSpaceShipEnemy) Price() int32 {
+	return 3
+}
+
 func (e *SmallSpaceShipEnemy) MovementDelay(tickMs int) int {
 	return tickMs * 12
 }

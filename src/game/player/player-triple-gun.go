@@ -50,6 +50,10 @@ func (b *TripleGunPlayer) Name() string {
 	return game_constants.PLAYER_TRIPLE_GUN
 }
 
+func (b *TripleGunPlayer) Tier() g_m.PlayerTier {
+	return 3
+}
+
 func (p *TripleGunPlayer) Shot() []g_m.IBullet {
 	topLeftCell := p.Cells()[0]
 	topMidCell := p.Cells()[1]

@@ -47,6 +47,10 @@ func (b *DefaultPlayer) Name() string {
 	return game_constants.PLAYER_DEFAULT
 }
 
+func (b *DefaultPlayer) Tier() g_m.PlayerTier {
+	return 1
+}
+
 func (p *DefaultPlayer) Shot() []g_m.IBullet {
 	// bullets thrown from top cells of the ship
 	topMidCell := p.Cells()[0]

@@ -3,6 +3,7 @@ package game_models
 type IEnemy interface {
 	IGameObjectWithHP
 	IAutoMoveable
+	IWithPrice
 	Name() string
 	MoveDir(arenaWidth, arenaHeight int) MoveDir
 }

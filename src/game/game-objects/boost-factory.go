@@ -11,7 +11,7 @@ import (
 func CreateBoost(diffLevel g_c.DifficultyLevel, injector models.IAppInjector) g_m.IBoost {
 	windowSize := injector.Storage().WindowSize()
 
-	x := int16(rand.Intn(windowSize.Width)-5) + 2
+	x := int16(rand.Intn(windowSize.Width)-10) + 5
 	y := int16(-2)
 
 	randBit := rand.Intn(2)

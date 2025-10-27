@@ -47,6 +47,10 @@ func (b *DoubleGunPlayer) Name() string {
 	return game_constants.PLAYER_DOBLE_GUN
 }
 
+func (b *DoubleGunPlayer) Tier() g_m.PlayerTier {
+	return 2
+}
+
 func (p *DoubleGunPlayer) Shot() []g_m.IBullet {
 	topLeftCell := p.Cells()[0]
 	topRightCell := p.Cells()[1]
