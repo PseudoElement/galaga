@@ -51,7 +51,7 @@ func (e *SmallSpaceShipEnemy) MovementDelay(tickMs int) int {
 
 func (e *SmallSpaceShipEnemy) Shot() []g_m.IBullet {
 	bottomMidCell := e.Cells()[len(e.Cells())-1]
-	bullet := g_o.NewEnemyBullet(bottomMidCell.Coords(), "#d48003ff")
+	bullet := g_o.NewBullet(bottomMidCell.Coords(), "#d48003ff", e)
 
 	return []g_m.IBullet{bullet}
 }

@@ -1,6 +1,7 @@
 package player
 
 import (
+	game_constants "github.com/pseudoelement/galaga/src/game/game-constants"
 	game_objects "github.com/pseudoelement/galaga/src/game/game-objects"
 	g_m "github.com/pseudoelement/galaga/src/game/models"
 	"github.com/pseudoelement/galaga/src/models"
@@ -36,30 +37,39 @@ func NewDoubleGunPlayer(coords g_m.Coords, injector models.IAppInjector) *Double
 		g_m.NewCell(g_m.CellParams(coords.X+5, coords.Y+3, "#2db9f0ff", "")),
 		g_m.NewCell(g_m.CellParams(coords.X+6, coords.Y+3, "#2db9f0ff", "")),
 	}
-	return &DoubleGunPlayer{GameObject: g_m.NewGameObject(cells)}
+	return &DoubleGunPlayer{
+		GameObject: g_m.NewGameObject(cells),
+		health:     10,
+	}
 }
 
-func (dp *DoubleGunPlayer) Shot() []g_m.IBullet {
-	topLeftCell := dp.Cells()[0]
-	topRightCell := dp.Cells()[1]
-	bulletLeft := game_objects.NewPlayerBullet(topLeftCell.Coords(), "#d7cc05ff")
-	bulletRight := game_objects.NewPlayerBullet(topRightCell.Coords(), "#d7cc05ff")
+func (b *DoubleGunPlayer) Name() string {
+	return game_constants.PLAYER_DOBLE_GUN
+}
+
+func (p *DoubleGunPlayer) Shot() []g_m.IBullet {
+	topLeftCell := p.Cells()[0]
+	topRightCell := p.Cells()[1]
+	bulletLeft := game_objects.NewBullet(topLeftCell.Coords(), "#d7cc05ff", p)
+	bulletRight := game_objects.NewBullet(topRightCell.Coords(), "#d7cc05ff", p)
 
 	return []g_m.IBullet{bulletLeft, bulletRight}
 }
 
-func (dp *DoubleGunPlayer) TakeBoost(boostItem g_m.IBoost) {}
-
-func (dp *DoubleGunPlayer) Health() int16 {
-	return dp.health
+func (p *DoubleGunPlayer) Health() int16 {
+	return p.health
 }
 
-func (dp *DoubleGunPlayer) GetHeal(plusHealthAmount int16) {
-	dp.health += plusHealthAmount
+func (p *DoubleGunPlayer) GetHeal(plusHealthAmount int16) {
+	p.health += plusHealthAmount
 }
 
-func (dp *DoubleGunPlayer) GetDamage(minusHealthAmount int16) {
-	dp.health -= minusHealthAmount
+func (p *DoubleGunPlayer) GetDamage(minusHealthAmount int16) {
+	p.health -= minusHealthAmount
+
+	if p.health <= 0 {
+		p.Destroy()
+	}
 }
 
 var _ g_m.IPlayer = (*DoubleGunPlayer)(nil)

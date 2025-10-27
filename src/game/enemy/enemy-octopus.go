@@ -13,9 +13,9 @@ func NewOctopusEnemy(x, y int16, health int16) g_m.IEnemy {
 	cells := []g_m.ICell{
 		//1st
 		g_m.NewCell(g_m.CellParams(x, y, "#ffffffff", "")),
-		g_m.NewCell(g_m.CellParams(x+1, y, "#ffffffff", "")),
+		g_m.NewCell(g_m.CellParams(x+1, y, "#ff0101ff", "")),
 		g_m.NewCell(g_m.CellParams(x+2, y, "#ffffffff", "")),
-		g_m.NewCell(g_m.CellParams(x+3, y, "#ffffffff", "")),
+		g_m.NewCell(g_m.CellParams(x+3, y, "#ff0101ff", "")),
 		g_m.NewCell(g_m.CellParams(x+4, y, "#ffffffff", "")),
 		//2nd
 		g_m.NewCell(g_m.CellParams(x, y+1, "#ffffffff", "")),

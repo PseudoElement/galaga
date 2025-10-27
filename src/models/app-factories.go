@@ -13,13 +13,8 @@ const (
 	ENEMY_BULLET
 )
 
-const (
-	DEFAULT_PLAYER BulletType = iota
-	DOUBLE_GUN_PLAYER
-)
-
 type IAppFactories interface {
-	PlayerFactory(coords game_models.Coords, bulletType BulletType) game_models.IPlayer
+	PlayerFactory(coords game_models.Coords, playerType game_constants.PlayerType) game_models.IPlayer
 	EnemyFactory(diffLevel game_constants.DifficultyLevel) game_models.IEnemy
 	BoostFactory(diffLevel game_constants.DifficultyLevel) game_models.IBoost
 }

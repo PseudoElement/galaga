@@ -6,6 +6,7 @@ type IGameObject interface {
 	Cells() []ICell
 	/* use to get position before move and redraw bg without rerendering whole arena */
 	PrevCells() []ICell
+	Name() string
 }
 
 type IGameObjectWithHP interface {
@@ -40,6 +41,10 @@ type IHealable interface {
 
 type IDamageable interface {
 	GetDamage(minusHealthAmount int16)
+}
+
+type IOwnerable interface {
+	Owner() IGameObject
 }
 
 // ////////////////////////////////////////////////////////////////////////////////////////////////////////////

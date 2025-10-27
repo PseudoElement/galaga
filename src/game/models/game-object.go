@@ -65,4 +65,4 @@ func (obj *GameObject) Destroyed() bool {
 	return true
 }
 
-var _ IGameObject = (*GameObject)(nil)
+// var _ IGameObject = (*GameObject)(nil)

@@ -56,6 +56,10 @@ func (app *App) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case models.UpdateTrigger:
 		return app, nil
 
+	case models.EndGameTrigger:
+		app.view.SetPage((pages.NewPageFirst(app.injector)))
+		return app, nil
+
 	case tea.KeyMsg:
 		switch msg.String() {
 		case "ctrl+c":
@@ -81,34 +85,42 @@ func (app *App) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				}
 			}
 			return app, nil
-
 		case "w":
-			moveDir := g_m.MoveTopX0_Y3()
-			if game_srv.CanMoveTop(app.gameSrv.Player(), moveDir) {
-				app.gameSrv.Player().Move(moveDir)
+			if app.gameSrv.IsPlaying() {
+				moveDir := g_m.MoveTopX0_Y3()
+				if game_srv.CanMoveTop(app.gameSrv.Player(), moveDir) {
+					app.gameSrv.Player().Move(moveDir)
+				}
 			}
 			return app, nil
 		case "a":
-			moveDir := g_m.MoveLeftX3_Y0()
-			if game_srv.CanMoveLeft(app.gameSrv.Player(), moveDir) {
-				app.gameSrv.Player().Move(moveDir)
+			if app.gameSrv.IsPlaying() {
+				moveDir := g_m.MoveLeftX3_Y0()
+				if game_srv.CanMoveLeft(app.gameSrv.Player(), moveDir) {
+					app.gameSrv.Player().Move(moveDir)
+				}
 			}
 			return app, nil
 		case "s":
-			moveDir := g_m.MoveBottomX0_Y3()
-			if game_srv.CanMoveBottom(app.gameSrv.Player(), moveDir, app.injector) {
-				app.gameSrv.Player().Move(moveDir)
+			if app.gameSrv.IsPlaying() {
+				moveDir := g_m.MoveBottomX0_Y3()
+				if game_srv.CanMoveBottom(app.gameSrv.Player(), moveDir, app.injector) {
+					app.gameSrv.Player().Move(moveDir)
+				}
 			}
 			return app, nil
 		case "d":
-			moveDir := g_m.MoveRightX3_Y0()
-			if game_srv.CanMoveRight(app.gameSrv.Player(), moveDir, app.injector) {
-				app.gameSrv.Player().Move(moveDir)
+			if app.gameSrv.IsPlaying() {
+				moveDir := g_m.MoveRightX3_Y0()
+				if game_srv.CanMoveRight(app.gameSrv.Player(), moveDir, app.injector) {
+					app.gameSrv.Player().Move(moveDir)
+				}
 			}
 			return app, nil
 		case "esc":
-			app.gameSrv.EndGame()
-			app.view.SetPage(pages.NewPageFirst(app.injector))
+			if app.gameSrv.IsPlaying() {
+				app.gameSrv.EndGame()
+			}
 			return app, nil
 		}
 

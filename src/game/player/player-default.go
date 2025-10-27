@@ -1,6 +1,7 @@
 package player
 
 import (
+	game_constants "github.com/pseudoelement/galaga/src/game/game-constants"
 	game_objects "github.com/pseudoelement/galaga/src/game/game-objects"
 	g_m "github.com/pseudoelement/galaga/src/game/models"
 	"github.com/pseudoelement/galaga/src/models"
@@ -20,7 +21,11 @@ func NewDefaultPlayer(coords g_m.Coords, injector models.IAppInjector) *DefaultP
 		// 2nd
 		g_m.NewCell(g_m.CellParams(coords.X+3, coords.Y+1, "#eb1eda", "")),
 		// 3th
+		g_m.NewCell(g_m.CellParams(coords.X, coords.Y+2, "#eb1eda", "")),
+		g_m.NewCell(g_m.CellParams(coords.X+2, coords.Y+2, "#eb1eda", "")),
 		g_m.NewCell(g_m.CellParams(coords.X+3, coords.Y+2, "#eb1eda", "")),
+		g_m.NewCell(g_m.CellParams(coords.X+4, coords.Y+2, "#eb1eda", "")),
+		g_m.NewCell(g_m.CellParams(coords.X+6, coords.Y+2, "#eb1eda", "")),
 		// 4th
 		g_m.NewCell(g_m.CellParams(coords.X, coords.Y+3, "#eb1eda", "")),
 		g_m.NewCell(g_m.CellParams(coords.X+1, coords.Y+3, "#eb1eda", "")),
@@ -34,29 +39,36 @@ func NewDefaultPlayer(coords g_m.Coords, injector models.IAppInjector) *DefaultP
 	return &DefaultPlayer{
 		GameObject: g_m.NewGameObject(cells),
 		injector:   injector,
+		health:     5,
 	}
 }
 
-func (dp *DefaultPlayer) Shot() []g_m.IBullet {
+func (b *DefaultPlayer) Name() string {
+	return game_constants.PLAYER_DEFAULT
+}
+
+func (p *DefaultPlayer) Shot() []g_m.IBullet {
 	// bullets thrown from top cells of the ship
-	topMidCell := dp.Cells()[0]
-	bullet := game_objects.NewPlayerBullet(topMidCell.Coords(), "#d7cc05ff")
+	topMidCell := p.Cells()[0]
+	bullet := game_objects.NewBullet(topMidCell.Coords(), "#d7cc05ff", p)
 
 	return []g_m.IBullet{bullet}
 }
 
-func (dp *DefaultPlayer) TakeBoost(boostItem g_m.IBoost) {}
-
-func (dp *DefaultPlayer) Health() int16 {
-	return dp.health
+func (p *DefaultPlayer) Health() int16 {
+	return p.health
 }
 
-func (dp *DefaultPlayer) GetHeal(plusHealthAmount int16) {
-	dp.health += plusHealthAmount
+func (p *DefaultPlayer) GetHeal(plusHealthAmount int16) {
+	p.health += plusHealthAmount
 }
 
-func (dp *DefaultPlayer) GetDamage(minusHealthAmount int16) {
-	dp.health -= minusHealthAmount
+func (p *DefaultPlayer) GetDamage(minusHealthAmount int16) {
+	p.health -= minusHealthAmount
+
+	if p.health <= 0 {
+		p.Destroy()
+	}
 }
 
 var _ g_m.IPlayer = (*DefaultPlayer)(nil)

@@ -14,5 +14,10 @@ func CreateBoost(diffLevel g_c.DifficultyLevel, injector models.IAppInjector) g_
 	x := int16(rand.Intn(windowSize.Width)-5) + 2
 	y := int16(-2)
 
-	return NewDoubleGunShipBoost(g_m.Coords{X: x, Y: y}, injector)
+	randBit := rand.Intn(2)
+	if randBit == 0 {
+		return NewDoubleGunShipBoost(g_m.Coords{X: x, Y: y}, injector)
+	} else {
+		return NewTripleGunShipBoost(g_m.Coords{X: x, Y: y}, injector)
+	}
 }

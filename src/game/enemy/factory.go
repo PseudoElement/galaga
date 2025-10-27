@@ -16,7 +16,7 @@ func CreateEnemy(diffLevel g_c.DifficultyLevel, injector models.IAppInjector) g_
 
 	var health int16
 	if diffLevel == g_c.EASY {
-		health = 3
+		health = 1
 	} else {
 		health = 6
 	}

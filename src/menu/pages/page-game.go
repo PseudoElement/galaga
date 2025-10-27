@@ -21,12 +21,15 @@ func NewPageGame(injector models.IAppInjector) models.IPage {
 	playerTopY := int16(height - 5)
 	playerLeftX := int16(math.Floor(float64(width) / 2))
 
-	injector.GameSrv().SetPlayer(player.NewDefaultPlayer(game_models.Coords{X: playerLeftX, Y: playerTopY}, injector))
+	injector.GameSrv().SetPlayer(player.NewTripleGunPlayer(game_models.Coords{X: playerLeftX, Y: playerTopY}, injector))
 	injector.GameSrv().StartGame()
 
 	return p
 }
 
 func (p *PageGame) View() string {
-	return p.injector.GameSrv().View()
+	if p.injector.GameSrv().IsPlaying() {
+		return p.injector.GameSrv().View()
+	}
+	return ""
 }

@@ -8,4 +8,5 @@ type IAppInjector interface {
 	GameSrv() IAppGameSrv
 	TeaProgram() *tea.Program
 	Factories() IAppFactories
+	View() IAppView
 }
