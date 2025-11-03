@@ -1,9 +1,14 @@
 package game_models
 
+import "math"
+
 type GameObject struct {
 	cells       []ICell
 	prevCells   []ICell
 	prevMoveDir MoveDir
+
+	width  int16
+	height int16
 }
 
 func NewGameObject(cells []ICell) *GameObject {
@@ -17,11 +22,14 @@ func NewGameObject(cells []ICell) *GameObject {
 		})
 	}
 
-	return &GameObject{
+	object := &GameObject{
 		cells:       cells,
 		prevCells:   prevCells,
 		prevMoveDir: MoveDir{X: 0, Y: 0},
 	}
+	object.setSize()
+
+	return object
 }
 
 func (obj *GameObject) Cells() []ICell {
@@ -65,4 +73,27 @@ func (obj *GameObject) Destroyed() bool {
 	return true
 }
 
-// var _ IGameObject = (*GameObject)(nil)
+func (obj *GameObject) Size() (width, height int16) {
+	return obj.width, obj.height
+}
+
+func (obj *GameObject) setSize() {
+	leftX, rightX, topY, bottomY := int16(math.MaxInt16), int16(math.MinInt16), int16(math.MaxInt16), int16(math.MinInt16)
+	for _, cell := range obj.Cells() {
+		if cell.Coords().X < leftX {
+			leftX = cell.Coords().X
+		}
+		if cell.Coords().X > rightX {
+			rightX = cell.Coords().X
+		}
+		if cell.Coords().Y < topY {
+			topY = cell.Coords().Y
+		}
+		if cell.Coords().Y > bottomY {
+			bottomY = cell.Coords().Y
+		}
+	}
+
+	obj.width = rightX - leftX + 1
+	obj.height = bottomY - topY + 1
+}

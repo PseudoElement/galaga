@@ -6,19 +6,23 @@ import (
 )
 
 type AppStorage struct {
-	language   models.Language
-	windowSize models.WindowSize
+	language       consts.Language
+	windowSize     models.WindowSize
+	gameDifficulty consts.DifficultyLevel
 }
 
 func NewAppStorage() *AppStorage {
-	return &AppStorage{language: consts.EN}
+	return &AppStorage{
+		language:       consts.EN,
+		gameDifficulty: consts.EASY,
+	}
 }
 
-func (as *AppStorage) Language() models.Language {
+func (as *AppStorage) Language() consts.Language {
 	return as.language
 }
 
-func (as *AppStorage) SetLanguage(lang models.Language) {
+func (as *AppStorage) SetLanguage(lang consts.Language) {
 	as.language = lang
 }
 
@@ -28,4 +32,12 @@ func (as *AppStorage) WindowSize() models.WindowSize {
 
 func (as *AppStorage) SetWindowSize(size models.WindowSize) {
 	as.windowSize = size
+}
+
+func (as *AppStorage) GameDifficulty() consts.DifficultyLevel {
+	return as.gameDifficulty
+}
+
+func (as *AppStorage) SetGameDifficulty(gameDifficulty consts.DifficultyLevel) {
+	as.gameDifficulty = gameDifficulty
 }

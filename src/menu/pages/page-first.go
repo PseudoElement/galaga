@@ -18,6 +18,12 @@ func NewPageFirst(injector models.IAppInjector) models.IPage {
 	)
 	p.elementsList.PushBack(
 		NewMenuRedirectButton(
+			injector.LanguageSrv().Translate("menu.buttons.difficulty"),
+			func() models.IPage { return NewPageDifficultyLvl(injector) },
+		),
+	)
+	p.elementsList.PushBack(
+		NewMenuRedirectButton(
 			injector.LanguageSrv().Translate("menu.buttons.language"),
 			func() models.IPage { return NewPageLanguage(injector) },
 		),

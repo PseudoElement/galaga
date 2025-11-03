@@ -6,6 +6,7 @@ type EnemyType = string
 const (
 	OCTOPUS          = "OctopusEnemy"
 	SMALL_SPACE_SHIP = "SmallSpaceShipEnemy"
+	TNT              = "TNTEnemy"
 )
 
 var EMEMY_NAMES = [2]EnemyType{
@@ -32,9 +33,11 @@ var PLAYER_NAMES = [3]PlayerType{
 const (
 	BOOST_DOUBLE_GUN_SHIP = "DoubleGunShipBoost"
 	BOOST_TRIPLE_GUN_SHIP = "TripleGunShipBoost"
+	BOOST_HP              = "HpBoost"
 )
 
 // others
 const (
-	BULLET = "Bullet"
+	BULLET       = "Bullet"
+	BLAST_OF_TNT = "BlastOfTNT"
 )

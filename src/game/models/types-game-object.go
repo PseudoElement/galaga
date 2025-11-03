@@ -7,6 +7,7 @@ type IGameObject interface {
 	/* use to get position before move and redraw bg without rerendering whole arena */
 	PrevCells() []ICell
 	Name() string
+	Size() (width, height int16)
 }
 
 type IGameObjectWithHP interface {
@@ -49,6 +50,10 @@ type IOwnerable interface {
 
 type IWithPrice interface {
 	Price() int32
+}
+
+type IAutoDestructable interface {
+	DestructInMs() int
 }
 
 // ////////////////////////////////////////////////////////////////////////////////////////////////////////////

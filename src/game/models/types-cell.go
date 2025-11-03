@@ -16,7 +16,7 @@ type ICell interface {
 	Coords() Coords
 	SetCoords(coords Coords)
 	Style() lipgloss.Style
-	SetStyle(newStyle lipgloss.Style)
+	SetStyle(newStyle lipgloss.Style) ICell
 }
 
 type CellConstructorParams struct {
@@ -40,4 +40,16 @@ type ICellWithDamage interface {
 	CanDamage() bool
 	Damage(player IPlayer)
 	SetDamageCount(damageCount int16)
+}
+
+type CellWithDamageConstructorParams struct {
+	CellConstructorParams
+	DamageCount int16
+}
+
+func CellWithDamageParams(x, y int16, color string, text string, damageCount int16) CellWithDamageConstructorParams {
+	return CellWithDamageConstructorParams{
+		CellConstructorParams: CellParams(x, y, color, text),
+		DamageCount:           damageCount,
+	}
 }

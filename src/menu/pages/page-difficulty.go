@@ -9,30 +9,31 @@ import (
 	"github.com/pseudoelement/galaga/src/models"
 )
 
-type PageLanguage struct {
+type PageDifficultyLvl struct {
 	*Page
 }
 
-func NewPageLanguage(injector models.IAppInjector) models.IPage {
-	p := &PageLanguage{Page: NewPage(injector)}
-	langStr := consts.LANGUAGE_TO_TRANSLATE_MAP[injector.Storage().Language()]
+func NewPageDifficultyLvl(injector models.IAppInjector) models.IPage {
+	p := &PageDifficultyLvl{Page: NewPage(injector)}
+	currDifficulty := consts.DIFFICULTY_TO_TRANSLATE_MAP[injector.Storage().GameDifficulty()]
 
 	// init list
 	p.elementsList.PushBack(ui.NewBaseViewElement(models.BaseViewElementParams{
 		InitialStyle: pages_styles.BoldTextStyle,
-		Text:         injector.LanguageSrv().Translate("menu.language.selectLang"),
+		Text:         injector.LanguageSrv().Translate("menu.difficulty.selectDifficulty"),
 	}))
 	p.elementsList.PushBack(ui.NewBaseViewElement(models.BaseViewElementParams{
 		InitialStyle: pages_styles.AccentTextStyle,
 		Text: fmt.Sprintf(
 			"%v: %v\n",
-			injector.LanguageSrv().Translate("menu.language.currLang"),
-			injector.LanguageSrv().Translate(fmt.Sprintf("menu.language.%s", langStr)),
+			injector.LanguageSrv().Translate("menu.difficulty.currDifficulty"),
+			injector.LanguageSrv().Translate(fmt.Sprintf("menu.difficulty.%s", currDifficulty)),
 		),
 	}))
 
-	p.elementsList.PushBack(NewEnglishLanguageButton(p.injector))
-	p.elementsList.PushBack(NewRussianLanguageButton(p.injector))
+	p.elementsList.PushBack(NewEasyDifficultyButton(p.injector))
+	p.elementsList.PushBack(NewMediumDifficultyButton(p.injector))
+	p.elementsList.PushBack(NewHardDifficultyButton(p.injector))
 
 	p.elementsList.PushBack(NewMenuRedirectButton(
 		injector.LanguageSrv().Translate("menu.buttons.back"),

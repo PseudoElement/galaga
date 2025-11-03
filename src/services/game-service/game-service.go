@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/charmbracelet/lipgloss"
-	g_c "github.com/pseudoelement/galaga/src/game/game-constants"
+	consts "github.com/pseudoelement/galaga/src/constants"
 	g_o "github.com/pseudoelement/galaga/src/game/game-objects"
 	g_m "github.com/pseudoelement/galaga/src/game/models"
 	"github.com/pseudoelement/galaga/src/models"
@@ -28,6 +28,7 @@ type AppGameSrv struct {
 	score          int32
 	bestScore      int32
 	stop           bool
+	memoryUsed     uint64
 }
 
 func NewAppGameSrv(injector models.IAppInjector, player g_m.IPlayer) models.IAppGameSrv {
@@ -39,6 +40,7 @@ func NewAppGameSrv(injector models.IAppInjector, player g_m.IPlayer) models.IApp
 		player:         player,
 		stop:           false,
 		gameDurationMs: 0,
+		memoryUsed:     0,
 	}
 
 	go gameSrv.loadBestScore()
@@ -68,11 +70,15 @@ func (gs *AppGameSrv) View() string {
 		return ""
 	}
 
+	memoryInfo := fmt.Sprintf("%s: %v KB | ", gs.injector.LanguageSrv().Translate("game.memoryUsage"), gs.memoryUsed)
+
 	hpView := fmt.Sprintf("❤️ %v", gs.player.Health())
 	scoreView := fmt.Sprintf(" %s: %d", gs.injector.LanguageSrv().Translate("game.score"), gs.score)
 	besrScoreView := fmt.Sprintf(" %s: %d", gs.injector.LanguageSrv().Translate("game.bestScore"), gs.bestScore)
 
-	header := lipgloss.JoinHorizontal(lipgloss.Center, hpView, scoreView, besrScoreView)
+	gameInfo := lipgloss.JoinHorizontal(lipgloss.Center, hpView, scoreView, besrScoreView)
+	header := lipgloss.JoinHorizontal(lipgloss.Left, memoryInfo, gameInfo)
+
 	view := lipgloss.JoinVertical(lipgloss.Center, header, arenaView)
 
 	return view
@@ -81,7 +87,7 @@ func (gs *AppGameSrv) View() string {
 func (gs *AppGameSrv) StartGame() {
 	gs.stop = false
 	// at this point gs.injector.Storage().WindowSize() should be already defined
-	width, height := gs.getArenaSize()
+	width, height := gs.ArenaSize()
 	for heightCount := range height { // y
 		arenaRow := make([]g_m.ICell, 0, width)
 		for widthCount := range width { // x
@@ -102,6 +108,7 @@ func (gs *AppGameSrv) StartGame() {
 	}
 
 	go gs.runLoop()
+	go checkMemoryUsage(gs)
 }
 
 func (gs *AppGameSrv) EndGame() {
@@ -130,8 +137,14 @@ func (gs *AppGameSrv) SetPlayer(player g_m.IPlayer) {
 	gs.objectsPool = append(gs.objectsPool, player)
 }
 
+func (gs *AppGameSrv) AddObjectsToObjectPool(objects ...g_m.IGameObject) {
+	for _, obj := range objects {
+		gs.objectsPool = append(gs.objectsPool, obj)
+	}
+}
+
 func (gs *AppGameSrv) runLoop() {
-	x, y := gs.getArenaSize()
+	x, y := gs.ArenaSize()
 	for !gs.stop && gs.player != nil {
 		if gs.player.Health() <= 0 {
 			gs.EndGame()
@@ -157,6 +170,8 @@ func (gs *AppGameSrv) runLoop() {
 				gs.handleEnemyBehaviourOnTick(obj)
 			case g_m.IBoost:
 				gs.handleBoostBehaviourOnTick(obj)
+			case g_m.IBlast:
+				gs.handleBlastDisappearance(obj)
 			}
 		}
 
@@ -172,7 +187,7 @@ func (gs *AppGameSrv) runLoop() {
 }
 
 func (gs *AppGameSrv) clearPrevCellsOfObjectsOnTick() {
-	width, height := gs.getArenaSize()
+	width, height := gs.ArenaSize()
 	updatedObjectsPool := make([]g_m.IGameObject, 0)
 	for _, obj := range gs.objectsPool {
 		for _, cell := range obj.PrevCells() {
@@ -200,7 +215,7 @@ func (gs *AppGameSrv) clearPrevCellsOfObjectsOnTick() {
 }
 
 func (gs *AppGameSrv) drawNewCellsOfObjectsOnTick() {
-	width, height := gs.getArenaSize()
+	width, height := gs.ArenaSize()
 	for _, obj := range gs.objectsPool {
 		for _, cell := range obj.Cells() {
 			coords := cell.Coords()
@@ -229,16 +244,23 @@ func (gs *AppGameSrv) handleCollision() {
 func (gs *AppGameSrv) handleEnemySpawn() {
 	spawnLatency := GAME_LOOP_TICK_DELAY_MS * 150
 	if gs.gameDurationMs%spawnLatency == 0 {
-		spawnedEnemy := gs.injector.Factories().EnemyFactory(g_c.EASY)
+		spawnedEnemy := gs.injector.Factories().EnemyFactory(consts.EASY)
 		gs.objectsPool = append(gs.objectsPool, spawnedEnemy)
 	}
 }
 
 func (gs *AppGameSrv) handleBoostSpawn() {
-	spawnLatency := GAME_LOOP_TICK_DELAY_MS * 150
-	if gs.gameDurationMs%spawnLatency == 0 {
-		spawnedEnemy := gs.injector.Factories().BoostFactory(g_c.EASY)
-		gs.objectsPool = append(gs.objectsPool, spawnedEnemy)
+	hpSpawnLatency := GAME_LOOP_TICK_DELAY_MS * 1_500
+	shipSpawnLatency := GAME_LOOP_TICK_DELAY_MS * 3_000
+	if gs.gameDurationMs%shipSpawnLatency == 0 {
+		nextTierShipBoost := gs.injector.Factories().BoostFactory(consts.EASY, true)
+		gs.objectsPool = append(gs.objectsPool, nextTierShipBoost)
+		return
+	}
+	if gs.gameDurationMs%hpSpawnLatency == 0 {
+		hpBoost := gs.injector.Factories().BoostFactory(consts.EASY, false)
+		gs.objectsPool = append(gs.objectsPool, hpBoost)
+		return
 	}
 }
 
@@ -252,8 +274,15 @@ func (gs *AppGameSrv) handleShot() {
 	}
 }
 
+func (gs *AppGameSrv) handleBlastDisappearance(blast g_m.IBlast) {
+	msNow := time.Now().UnixMilli()
+	if msNow >= int64(blast.DestructInMs()) {
+		blast.Destroy()
+	}
+}
+
 func (gs *AppGameSrv) handleEnemyBehaviourOnTick(enemy g_m.IEnemy) {
-	width, height := gs.getArenaSize()
+	width, height := gs.ArenaSize()
 	movementDelay := enemy.MovementDelay(GAME_LOOP_TICK_DELAY_MS)
 	if gs.gameDurationMs%movementDelay == 0 {
 		enemy.Move(enemy.MoveDir(width, height))
@@ -324,7 +353,7 @@ func (gs *AppGameSrv) saveBestScoreIfRecord(currentScore int32) {
 	}
 }
 
-func (gs *AppGameSrv) getArenaSize() (x, y int) {
+func (gs *AppGameSrv) ArenaSize() (width, height int) {
 	windowSize := gs.injector.Storage().WindowSize()
 	// first row leave for header with HP and score
 	return windowSize.Width, windowSize.Height - 1

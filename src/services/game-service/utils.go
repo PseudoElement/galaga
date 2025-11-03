@@ -2,6 +2,8 @@ package game_srv
 
 import (
 	"fmt"
+	"runtime"
+	"time"
 
 	game_models "github.com/pseudoelement/galaga/src/game/models"
 )
@@ -49,5 +51,15 @@ func throwOnError(err error, tag string) {
 	if err != nil {
 		message := fmt.Sprintf("[%s] error ==> %s", tag, err.Error())
 		panic(message)
+	}
+}
+
+func checkMemoryUsage(gameSrv *AppGameSrv) {
+	var m runtime.MemStats
+	for !gameSrv.stop {
+		time.Sleep(2 * time.Second)
+		runtime.ReadMemStats(&m)
+		usedMemoryKB := m.Alloc / 1024
+		gameSrv.memoryUsed = usedMemoryKB
 	}
 }

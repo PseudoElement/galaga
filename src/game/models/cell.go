@@ -32,8 +32,10 @@ func (c *Cell) Style() lipgloss.Style {
 	return c.style
 }
 
-func (c *Cell) SetStyle(newStyle lipgloss.Style) {
-	c.style = newStyle
+// set styles over existing
+func (c *Cell) SetStyle(newStyle lipgloss.Style) ICell {
+	c.style = c.style.Inherit(newStyle)
+	return c
 }
 
 func (c *Cell) Color() string {

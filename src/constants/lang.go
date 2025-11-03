@@ -1,13 +1,13 @@
 package consts
 
-import "github.com/pseudoelement/galaga/src/models"
+type Language int
 
 const (
-	EN models.Language = iota
+	EN Language = iota
 	RU
 )
 
-var LanguageMap = map[models.Language]string{
-	EN: "English",
-	RU: "Russian",
+var LANGUAGE_TO_TRANSLATE_MAP = map[Language]string{
+	EN: "english",
+	RU: "russian",
 }

@@ -1,6 +1,8 @@
 package models
 
-import game_models "github.com/pseudoelement/galaga/src/game/models"
+import (
+	game_models "github.com/pseudoelement/galaga/src/game/models"
+)
 
 type IAppGameSrv interface {
 	IsPlaying() bool
@@ -9,4 +11,5 @@ type IAppGameSrv interface {
 	EndGame()
 	Player() game_models.IPlayer
 	SetPlayer(player game_models.IPlayer)
+	ArenaSize() (width, height int)
 }

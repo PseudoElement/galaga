@@ -12,3 +12,8 @@ type IEnemyShooter interface {
 	IEnemy
 	IShooter
 }
+
+type IEnemyBomb interface {
+	IEnemy
+	Blast() []IGameObject
+}

@@ -89,4 +89,65 @@ func NewRussianLanguageButton(injector models.IAppInjector) *LanguageButton {
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+type DifficultyButton struct {
+	*ui.RedirectableElement
+	callback func()
+}
+
+func NewDifficultyButton(redirectableElParams models.RedirectableElementParams, callback func()) *DifficultyButton {
+	return &DifficultyButton{
+		RedirectableElement: ui.NewRedirectableElement(redirectableElParams),
+		callback:            callback,
+	}
+}
+
+func (lb *DifficultyButton) Action() {
+	lb.callback()
+}
+
+var _ models.IActionElement = (*DifficultyButton)(nil)
+var _ models.IRedirectableElement = (*DifficultyButton)(nil)
+
+func NewEasyDifficultyButton(injector models.IAppInjector) *DifficultyButton {
+	return NewDifficultyButton(
+		models.RedirectableElementParams{
+			BaseViewElementParams: models.BaseViewElementParams{
+				Injector:     injector,
+				Text:         injector.LanguageSrv().Translate("menu.difficulty.easy"),
+				InitialStyle: pages_styles.BoldTextStyle,
+			},
+			RedirectCallback: func() models.IPage { return NewPageFirst(injector) },
+		},
+		func() { injector.Storage().SetGameDifficulty(consts.EASY) },
+	)
+}
+
+func NewMediumDifficultyButton(injector models.IAppInjector) *DifficultyButton {
+	return NewDifficultyButton(
+		models.RedirectableElementParams{
+			BaseViewElementParams: models.BaseViewElementParams{
+				Injector:     injector,
+				Text:         injector.LanguageSrv().Translate("menu.difficulty.medium"),
+				InitialStyle: pages_styles.BoldTextStyle,
+			},
+			RedirectCallback: func() models.IPage { return NewPageFirst(injector) },
+		},
+		func() { injector.Storage().SetGameDifficulty(consts.MEDIUM) },
+	)
+}
+
+func NewHardDifficultyButton(injector models.IAppInjector) *DifficultyButton {
+	return NewDifficultyButton(
+		models.RedirectableElementParams{
+			BaseViewElementParams: models.BaseViewElementParams{
+				Injector:     injector,
+				Text:         injector.LanguageSrv().Translate("menu.difficulty.hard"),
+				InitialStyle: pages_styles.BoldTextStyle,
+			},
+			RedirectCallback: func() models.IPage { return NewPageFirst(injector) },
+		},
+		func() { injector.Storage().SetGameDifficulty(consts.HARD) },
+	)
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////

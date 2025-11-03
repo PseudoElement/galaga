@@ -11,13 +11,13 @@ import (
 
 type AppLanguageSrv struct {
 	// langScheme LanguageScheme
-	langScheme map[models.Language]map[string]interface{}
+	langScheme map[consts.Language]map[string]interface{}
 	storage    models.IAppStorage
 }
 
 func NewAppLanguageSrv(storage models.IAppStorage) models.IAppLanguageSrv {
 	appLangSrv := &AppLanguageSrv{
-		langScheme: make(map[models.Language]map[string]interface{}),
+		langScheme: make(map[consts.Language]map[string]interface{}),
 		storage:    storage,
 	}
 	appLangSrv.loadLanguages()
@@ -50,14 +50,14 @@ func (ls *AppLanguageSrv) Translate(translationPath string) string {
 }
 
 func (ls *AppLanguageSrv) loadLanguages() {
-	for langKey, _ := range consts.LanguageMap {
+	for langKey, _ := range consts.LANGUAGE_TO_TRANSLATE_MAP {
 		ls.loadLanguageJSON(langKey)
 	}
 }
 
-func (ls *AppLanguageSrv) loadLanguageJSON(lang models.Language) {
+func (ls *AppLanguageSrv) loadLanguageJSON(lang consts.Language) {
 	pwd, _ := os.Getwd()
-	pathToFile := pwd + "/lang/" + consts.LanguageMap[lang] + ".json"
+	pathToFile := pwd + "/lang/" + consts.LANGUAGE_TO_TRANSLATE_MAP[lang] + ".json"
 	fileBytes, err := os.ReadFile(pathToFile)
 	if err != nil {
 		panic(err)
