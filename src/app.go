@@ -95,7 +95,7 @@ func (app *App) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return app, nil
 		case "a":
 			if app.gameSrv.IsPlaying() {
-				moveDir := g_m.MoveLeftX3_Y0()
+				moveDir := g_m.MoveLeftX5_Y0()
 				if game_srv.CanMoveLeft(app.gameSrv.Player(), moveDir) {
 					app.gameSrv.Player().Move(moveDir)
 				}
@@ -111,7 +111,7 @@ func (app *App) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return app, nil
 		case "d":
 			if app.gameSrv.IsPlaying() {
-				moveDir := g_m.MoveRightX3_Y0()
+				moveDir := g_m.MoveRightX5_Y0()
 				if game_srv.CanMoveRight(app.gameSrv.Player(), moveDir, app.injector) {
 					app.gameSrv.Player().Move(moveDir)
 				}

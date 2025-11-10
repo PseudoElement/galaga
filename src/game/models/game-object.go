@@ -1,6 +1,8 @@
 package game_models
 
-import "math"
+import (
+	"math"
+)
 
 type GameObject struct {
 	cells       []ICell
@@ -45,6 +47,10 @@ func (obj *GameObject) PrevMoveDir() MoveDir {
 }
 
 func (obj *GameObject) Move(dir MoveDir) {
+	if dir == MoveNoneX0_Y0() {
+		return
+	}
+
 	obj.prevMoveDir = dir
 	for idx, cell := range obj.cells {
 		prevCoords := cell.Coords()

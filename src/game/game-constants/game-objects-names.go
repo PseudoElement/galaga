@@ -9,9 +9,16 @@ const (
 	TNT              = "TNTEnemy"
 )
 
-var EMEMY_NAMES = [2]EnemyType{
+// bosses
+const (
+	BOSS_JUGGERNAUT = "JuggernautBoss"
+)
+
+var EMEMY_NAMES = [4]EnemyType{
 	OCTOPUS,
 	SMALL_SPACE_SHIP,
+	TNT,
+	BOSS_JUGGERNAUT,
 }
 
 // players

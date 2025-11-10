@@ -66,4 +66,8 @@ func (e *OctopusEnemy) MovementDelay(tickMs int) int {
 	return tickMs * 8
 }
 
+func (e *OctopusEnemy) IsBoss() bool {
+	return false
+}
+
 var _ g_m.IEnemy = (*OctopusEnemy)(nil)

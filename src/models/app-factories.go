@@ -18,4 +18,5 @@ type IAppFactories interface {
 	PlayerFactory(coords game_models.Coords, playerType game_constants.PlayerType) game_models.IPlayer
 	EnemyFactory(diffLevel consts.DifficultyLevel) game_models.IEnemy
 	BoostFactory(diffLevel consts.DifficultyLevel, spawnNewShip bool) game_models.IBoost
+	BossEnemyFactory(diffLevel consts.DifficultyLevel) game_models.IBossEnemy
 }

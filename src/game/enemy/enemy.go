@@ -63,6 +63,10 @@ func (e *Enemy) GetDamage(amount int16) {
 	}
 }
 
+func (e *Enemy) ChangeMovementPattern(newPattern []g_m.MoveDir) {
+	e.movementPattern = newPattern
+}
+
 func (e *Enemy) staysOnArenaLeftEdge() bool {
 	for _, cell := range e.Cells() {
 		if cell.Coords().X == 0 {

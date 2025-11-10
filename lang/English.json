@@ -30,6 +30,7 @@
     "game": {
         "score": "Score",
         "bestScore": "Best Score",
-        "memoryUsage": "Memory usage"
+        "memoryUsage": "Memory usage",
+        "bossHp": "Boss HP"
     }
 }

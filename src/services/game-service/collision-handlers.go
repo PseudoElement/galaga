@@ -32,8 +32,12 @@ func _checkCollisionWithBullet(obj game_models.IGameObject, otherObject game_mod
 			bulletObject.Destroy()
 			if enemyObject.Destroyed() {
 				bomb, isBombDestroyed := enemyObject.(game_models.IEnemyBomb)
+				_, isBossKilled := enemyObject.(game_models.IBossEnemy)
 				if isBombDestroyed {
 					gameSrv.AddObjectsToObjectPool(bomb.Blast()...)
+				}
+				if isBossKilled {
+					gameSrv.boss = nil
 				}
 
 				gameSrv.increaseScore(enemyObject.Price())

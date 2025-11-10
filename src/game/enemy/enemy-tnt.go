@@ -59,6 +59,10 @@ func (e *TNTEnemy) MovementDelay(tickMs int) int {
 	return tickMs * 3
 }
 
+func (e *TNTEnemy) IsBoss() bool {
+	return false
+}
+
 func (e *TNTEnemy) Blast() []g_m.IGameObject {
 	// !!! supposed that [0]  element in cells list is top left corner of object
 	tntLeftCornerCoordX := e.Cells()[0].Coords().X

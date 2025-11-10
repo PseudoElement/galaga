@@ -6,11 +6,13 @@ type IEnemy interface {
 	IWithPrice
 	Name() string
 	MoveDir(arenaWidth, arenaHeight int) MoveDir
+	ChangeMovementPattern(newPattern []MoveDir)
+	IsBoss() bool
 }
 
 type IEnemyShooter interface {
 	IEnemy
-	IShooter
+	IAutoShooter
 }
 
 type IEnemyBomb interface {

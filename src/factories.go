@@ -2,6 +2,7 @@ package app
 
 import (
 	consts "github.com/pseudoelement/galaga/src/constants"
+	"github.com/pseudoelement/galaga/src/game/boss"
 	"github.com/pseudoelement/galaga/src/game/enemy"
 	game_constants "github.com/pseudoelement/galaga/src/game/game-constants"
 	game_objects "github.com/pseudoelement/galaga/src/game/game-objects"
@@ -28,4 +29,8 @@ func (af *AppFactories) EnemyFactory(diffLevel consts.DifficultyLevel) game_mode
 
 func (af *AppFactories) BoostFactory(diffLevel consts.DifficultyLevel, spawnNewShip bool) game_models.IBoost {
 	return game_objects.CreateBoost(diffLevel, spawnNewShip, af.injector)
+}
+
+func (af *AppFactories) BossEnemyFactory(diffLevel consts.DifficultyLevel) game_models.IBossEnemy {
+	return boss.CreateBoss(diffLevel, af.injector)
 }

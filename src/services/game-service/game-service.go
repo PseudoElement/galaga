@@ -7,7 +7,6 @@ import (
 	"time"
 
 	"github.com/charmbracelet/lipgloss"
-	consts "github.com/pseudoelement/galaga/src/constants"
 	g_o "github.com/pseudoelement/galaga/src/game/game-objects"
 	g_m "github.com/pseudoelement/galaga/src/game/models"
 	"github.com/pseudoelement/galaga/src/models"
@@ -29,6 +28,8 @@ type AppGameSrv struct {
 	bestScore      int32
 	stop           bool
 	memoryUsed     uint64
+
+	boss g_m.IBossEnemy
 }
 
 func NewAppGameSrv(injector models.IAppInjector, player g_m.IPlayer) models.IAppGameSrv {
@@ -39,6 +40,7 @@ func NewAppGameSrv(injector models.IAppInjector, player g_m.IPlayer) models.IApp
 		score:          0,
 		player:         player,
 		stop:           false,
+		boss:           nil,
 		gameDurationMs: 0,
 		memoryUsed:     0,
 	}
@@ -72,11 +74,18 @@ func (gs *AppGameSrv) View() string {
 
 	memoryInfo := fmt.Sprintf("%s: %v KB | ", gs.injector.LanguageSrv().Translate("game.memoryUsage"), gs.memoryUsed)
 
+	headerViews := make([]string, 0)
+
 	hpView := fmt.Sprintf("❤️ %v", gs.player.Health())
 	scoreView := fmt.Sprintf(" %s: %d", gs.injector.LanguageSrv().Translate("game.score"), gs.score)
-	besrScoreView := fmt.Sprintf(" %s: %d", gs.injector.LanguageSrv().Translate("game.bestScore"), gs.bestScore)
+	bestScoreView := fmt.Sprintf(" %s: %d", gs.injector.LanguageSrv().Translate("game.bestScore"), gs.bestScore)
+	headerViews = append(headerViews, hpView, scoreView, bestScoreView)
+	if gs.boss != nil {
+		bossHpView := fmt.Sprintf(" %s: %d", gs.injector.LanguageSrv().Translate("game.bossHp"), gs.boss.Health())
+		headerViews = append(headerViews, bossHpView)
+	}
 
-	gameInfo := lipgloss.JoinHorizontal(lipgloss.Center, hpView, scoreView, besrScoreView)
+	gameInfo := lipgloss.JoinHorizontal(lipgloss.Center, headerViews...)
 	header := lipgloss.JoinHorizontal(lipgloss.Left, memoryInfo, gameInfo)
 
 	view := lipgloss.JoinVertical(lipgloss.Center, header, arenaView)
@@ -120,6 +129,7 @@ func (gs *AppGameSrv) EndGame() {
 	gs.objectsPool = make([]g_m.IGameObject, 0)
 	gs.arena = make([][]g_m.ICell, 0)
 	gs.gameDurationMs = 0
+	gs.boss = nil
 
 	gs.resetScore()
 }
@@ -157,6 +167,7 @@ func (gs *AppGameSrv) runLoop() {
 		gs.clearPrevCellsOfObjectsOnTick()
 		gs.drawNewCellsOfObjectsOnTick()
 
+		gs.handleBossSpawn()
 		gs.handleEnemySpawn()
 		gs.handleBoostSpawn()
 		gs.handleShot()
@@ -243,24 +254,38 @@ func (gs *AppGameSrv) handleCollision() {
 
 func (gs *AppGameSrv) handleEnemySpawn() {
 	spawnLatency := GAME_LOOP_TICK_DELAY_MS * 150
-	if gs.gameDurationMs%spawnLatency == 0 {
-		spawnedEnemy := gs.injector.Factories().EnemyFactory(consts.EASY)
+	if gs.gameDurationMs%spawnLatency == 0 && gs.boss == nil {
+		difficulty := gs.injector.Storage().GameDifficulty()
+		spawnedEnemy := gs.injector.Factories().EnemyFactory(difficulty)
 		gs.objectsPool = append(gs.objectsPool, spawnedEnemy)
 	}
 }
 
-func (gs *AppGameSrv) handleBoostSpawn() {
-	hpSpawnLatency := GAME_LOOP_TICK_DELAY_MS * 1_500
-	shipSpawnLatency := GAME_LOOP_TICK_DELAY_MS * 3_000
-	if gs.gameDurationMs%shipSpawnLatency == 0 {
-		nextTierShipBoost := gs.injector.Factories().BoostFactory(consts.EASY, true)
-		gs.objectsPool = append(gs.objectsPool, nextTierShipBoost)
-		return
+func (gs *AppGameSrv) handleBossSpawn() {
+	spawnLatency := GAME_LOOP_TICK_DELAY_MS * 280
+	if gs.gameDurationMs%spawnLatency == 0 && gs.boss == nil {
+		difficulty := gs.injector.Storage().GameDifficulty()
+		boss := gs.injector.Factories().BossEnemyFactory(difficulty)
+		gs.boss = boss
+		gs.objectsPool = append(gs.objectsPool, boss)
 	}
-	if gs.gameDurationMs%hpSpawnLatency == 0 {
-		hpBoost := gs.injector.Factories().BoostFactory(consts.EASY, false)
-		gs.objectsPool = append(gs.objectsPool, hpBoost)
-		return
+}
+
+func (gs *AppGameSrv) handleBoostSpawn() {
+	if gs.boss == nil {
+		hpSpawnLatency := GAME_LOOP_TICK_DELAY_MS * 1_500
+		shipSpawnLatency := GAME_LOOP_TICK_DELAY_MS * 3_000
+		difficulty := gs.injector.Storage().GameDifficulty()
+		if gs.gameDurationMs%shipSpawnLatency == 0 {
+			nextTierShipBoost := gs.injector.Factories().BoostFactory(difficulty, true)
+			gs.objectsPool = append(gs.objectsPool, nextTierShipBoost)
+			return
+		}
+		if gs.gameDurationMs%hpSpawnLatency == 0 {
+			hpBoost := gs.injector.Factories().BoostFactory(difficulty, false)
+			gs.objectsPool = append(gs.objectsPool, hpBoost)
+			return
+		}
 	}
 }
 
@@ -290,7 +315,7 @@ func (gs *AppGameSrv) handleEnemyBehaviourOnTick(enemy g_m.IEnemy) {
 
 	enemyShooter, isShooter := enemy.(g_m.IEnemyShooter)
 	if isShooter {
-		shotLatency := GAME_LOOP_TICK_DELAY_MS * 64
+		shotLatency := enemyShooter.ShootingDelay(GAME_LOOP_TICK_DELAY_MS)
 		if gs.gameDurationMs%shotLatency == 0 {
 			bullets := enemyShooter.Shot()
 			for _, bullet := range bullets {

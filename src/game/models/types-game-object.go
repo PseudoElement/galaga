@@ -35,6 +35,11 @@ type IShooter interface {
 	Shot() []IBullet
 }
 
+type IAutoShooter interface {
+	IShooter
+	ShootingDelay(tickMs int) int
+}
+
 type IHealable interface {
 	Health() int16
 	GetHeal(plusHealthAmount int16)
@@ -62,6 +67,8 @@ type MoveDir struct {
 	Y int16
 }
 
+func MoveNoneX0_Y0() MoveDir { return MoveDir{X: 0, Y: 0} }
+
 func MoveTopX0_Y1() MoveDir { return MoveDir{X: 0, Y: -1} }
 
 func MoveBottomX0_Y1() MoveDir { return MoveDir{X: 0, Y: 1} }
@@ -70,13 +77,17 @@ func MoveLeftX1_Y0() MoveDir { return MoveDir{X: -1, Y: 0} }
 
 func MoveRightX1_Y0() MoveDir { return MoveDir{X: 1, Y: 0} }
 
+func MoveLeftX2_Y0() MoveDir { return MoveDir{X: -2, Y: 0} }
+
+func MoveRightX2_Y0() MoveDir { return MoveDir{X: 2, Y: 0} }
+
 func MoveTopX0_Y3() MoveDir { return MoveDir{X: 0, Y: -3} }
 
 func MoveBottomX0_Y3() MoveDir { return MoveDir{X: 0, Y: 3} }
 
-func MoveLeftX3_Y0() MoveDir { return MoveDir{X: -5, Y: 0} }
+func MoveLeftX5_Y0() MoveDir { return MoveDir{X: -5, Y: 0} }
 
-func MoveRightX3_Y0() MoveDir { return MoveDir{X: 5, Y: 0} }
+func MoveRightX5_Y0() MoveDir { return MoveDir{X: 5, Y: 0} }
 
 func MoveLeftBottomX1_Y1() MoveDir { return MoveDir{X: -1, Y: 1} }
 
