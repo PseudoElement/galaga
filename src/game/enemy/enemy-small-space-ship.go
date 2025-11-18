@@ -13,13 +13,13 @@ type SmallSpaceShipEnemy struct {
 func NewSmallSpaceShipEnemy(x, y int16, health int16) g_m.IEnemyShooter {
 	cells := []g_m.ICell{
 		//1st
-		g_m.NewCell(g_m.CellParams(x, y, "#a60bc6ff", "")),
-		g_m.NewCell(g_m.CellParams(x+1, y, "#a60bc6ff", "")),
-		g_m.NewCell(g_m.CellParams(x+2, y, "#a60bc6ff", "")),
+		g_m.NewCell(g_m.CellParams(x, y, "#a60bc6ff", ""), g_c.SMALL_SPACE_SHIP),
+		g_m.NewCell(g_m.CellParams(x+1, y, "#a60bc6ff", ""), g_c.SMALL_SPACE_SHIP),
+		g_m.NewCell(g_m.CellParams(x+2, y, "#a60bc6ff", ""), g_c.SMALL_SPACE_SHIP),
 		//2nd
-		g_m.NewCell(g_m.CellParams(x+1, y+1, "#a60bc6ff", "")),
+		g_m.NewCell(g_m.CellParams(x+1, y+1, "#a60bc6ff", ""), g_c.SMALL_SPACE_SHIP),
 		//3th
-		g_m.NewCell(g_m.CellParams(x+1, y+2, "#a60bc6ff", "")),
+		g_m.NewCell(g_m.CellParams(x+1, y+2, "#a60bc6ff", ""), g_c.SMALL_SPACE_SHIP),
 	}
 	movementPattern := []g_m.MoveDir{
 		g_m.MoveLeftBottomX1_Y1(),
@@ -37,7 +37,7 @@ func NewSmallSpaceShipEnemy(x, y int16, health int16) g_m.IEnemyShooter {
 	}
 
 	return &SmallSpaceShipEnemy{
-		Enemy: NewEnemy(health, cells, movementPattern),
+		Enemy: NewEnemy(health, cells, movementPattern, g_c.SMALL_SPACE_SHIP),
 	}
 }
 
@@ -63,7 +63,7 @@ func (e *SmallSpaceShipEnemy) ShootingDelay(tickMs int) int {
 
 func (e *SmallSpaceShipEnemy) Shot() []g_m.IBullet {
 	bottomMidCell := e.Cells()[len(e.Cells())-1]
-	bullet := g_o.NewBullet(bottomMidCell.Coords(), "#d48003ff", e)
+	bullet := g_o.NewBullet(bottomMidCell.Coords(), "#d48003ff", e.Name())
 
 	return []g_m.IBullet{bullet}
 }

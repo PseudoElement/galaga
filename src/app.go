@@ -87,6 +87,7 @@ func (app *App) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return app, nil
 		case "w":
 			if app.gameSrv.IsPlaying() {
+				app.gameSrv.ClearPrevPlayerCellsOnButtonPress()
 				moveDir := g_m.MoveTopX0_Y3()
 				if game_srv.CanMoveTop(app.gameSrv.Player(), moveDir) {
 					app.gameSrv.Player().Move(moveDir)
@@ -95,6 +96,7 @@ func (app *App) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return app, nil
 		case "a":
 			if app.gameSrv.IsPlaying() {
+				app.gameSrv.ClearPrevPlayerCellsOnButtonPress()
 				moveDir := g_m.MoveLeftX5_Y0()
 				if game_srv.CanMoveLeft(app.gameSrv.Player(), moveDir) {
 					app.gameSrv.Player().Move(moveDir)
@@ -103,6 +105,7 @@ func (app *App) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return app, nil
 		case "s":
 			if app.gameSrv.IsPlaying() {
+				app.gameSrv.ClearPrevPlayerCellsOnButtonPress()
 				moveDir := g_m.MoveBottomX0_Y3()
 				if game_srv.CanMoveBottom(app.gameSrv.Player(), moveDir, app.injector) {
 					app.gameSrv.Player().Move(moveDir)
@@ -111,6 +114,7 @@ func (app *App) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return app, nil
 		case "d":
 			if app.gameSrv.IsPlaying() {
+				app.gameSrv.ClearPrevPlayerCellsOnButtonPress()
 				moveDir := g_m.MoveRightX5_Y0()
 				if game_srv.CanMoveRight(app.gameSrv.Player(), moveDir, app.injector) {
 					app.gameSrv.Player().Move(moveDir)

@@ -1,7 +1,7 @@
 package player
 
 import (
-	game_constants "github.com/pseudoelement/galaga/src/game/game-constants"
+	g_c "github.com/pseudoelement/galaga/src/game/game-constants"
 	game_objects "github.com/pseudoelement/galaga/src/game/game-objects"
 	g_m "github.com/pseudoelement/galaga/src/game/models"
 	"github.com/pseudoelement/galaga/src/models"
@@ -17,34 +17,34 @@ type DoubleGunPlayer struct {
 func NewDoubleGunPlayer(coords g_m.Coords, injector models.IAppInjector) *DoubleGunPlayer {
 	cells := []g_m.ICell{
 		// 1st
-		g_m.NewCell(g_m.CellParams(coords.X+2, coords.Y, "#2db9f0ff", "")),
-		g_m.NewCell(g_m.CellParams(coords.X+4, coords.Y, "#2db9f0ff", "")),
+		g_m.NewCell(g_m.CellParams(coords.X+2, coords.Y, "#2db9f0ff", ""), g_c.PLAYER_DOBLE_GUN),
+		g_m.NewCell(g_m.CellParams(coords.X+4, coords.Y, "#2db9f0ff", ""), g_c.PLAYER_DOBLE_GUN),
 		// 2nd
-		g_m.NewCell(g_m.CellParams(coords.X+2, coords.Y+1, "#2db9f0ff", "")),
-		g_m.NewCell(g_m.CellParams(coords.X+4, coords.Y+1, "#2db9f0ff", "")),
+		g_m.NewCell(g_m.CellParams(coords.X+2, coords.Y+1, "#2db9f0ff", ""), g_c.PLAYER_DOBLE_GUN),
+		g_m.NewCell(g_m.CellParams(coords.X+4, coords.Y+1, "#2db9f0ff", ""), g_c.PLAYER_DOBLE_GUN),
 		// 3th
-		g_m.NewCell(g_m.CellParams(coords.X, coords.Y+2, "#2db9f0ff", "")),
-		g_m.NewCell(g_m.CellParams(coords.X+2, coords.Y+2, "#2db9f0ff", "")),
-		g_m.NewCell(g_m.CellParams(coords.X+3, coords.Y+2, "#2db9f0ff", "")),
-		g_m.NewCell(g_m.CellParams(coords.X+4, coords.Y+2, "#2db9f0ff", "")),
-		g_m.NewCell(g_m.CellParams(coords.X+6, coords.Y+2, "#2db9f0ff", "")),
+		g_m.NewCell(g_m.CellParams(coords.X, coords.Y+2, "#2db9f0ff", ""), g_c.PLAYER_DOBLE_GUN),
+		g_m.NewCell(g_m.CellParams(coords.X+2, coords.Y+2, "#2db9f0ff", ""), g_c.PLAYER_DOBLE_GUN),
+		g_m.NewCell(g_m.CellParams(coords.X+3, coords.Y+2, "#2db9f0ff", ""), g_c.PLAYER_DOBLE_GUN),
+		g_m.NewCell(g_m.CellParams(coords.X+4, coords.Y+2, "#2db9f0ff", ""), g_c.PLAYER_DOBLE_GUN),
+		g_m.NewCell(g_m.CellParams(coords.X+6, coords.Y+2, "#2db9f0ff", ""), g_c.PLAYER_DOBLE_GUN),
 		// 4th
-		g_m.NewCell(g_m.CellParams(coords.X, coords.Y+3, "#2db9f0ff", "")),
-		g_m.NewCell(g_m.CellParams(coords.X+1, coords.Y+3, "#2db9f0ff", "")),
-		g_m.NewCell(g_m.CellParams(coords.X+2, coords.Y+3, "#2db9f0ff", "")),
-		g_m.NewCell(g_m.CellParams(coords.X+3, coords.Y+3, "#2db9f0ff", "")),
-		g_m.NewCell(g_m.CellParams(coords.X+4, coords.Y+3, "#2db9f0ff", "")),
-		g_m.NewCell(g_m.CellParams(coords.X+5, coords.Y+3, "#2db9f0ff", "")),
-		g_m.NewCell(g_m.CellParams(coords.X+6, coords.Y+3, "#2db9f0ff", "")),
+		g_m.NewCell(g_m.CellParams(coords.X, coords.Y+3, "#2db9f0ff", ""), g_c.PLAYER_DOBLE_GUN),
+		g_m.NewCell(g_m.CellParams(coords.X+1, coords.Y+3, "#2db9f0ff", ""), g_c.PLAYER_DOBLE_GUN),
+		g_m.NewCell(g_m.CellParams(coords.X+2, coords.Y+3, "#2db9f0ff", ""), g_c.PLAYER_DOBLE_GUN),
+		g_m.NewCell(g_m.CellParams(coords.X+3, coords.Y+3, "#2db9f0ff", ""), g_c.PLAYER_DOBLE_GUN),
+		g_m.NewCell(g_m.CellParams(coords.X+4, coords.Y+3, "#2db9f0ff", ""), g_c.PLAYER_DOBLE_GUN),
+		g_m.NewCell(g_m.CellParams(coords.X+5, coords.Y+3, "#2db9f0ff", ""), g_c.PLAYER_DOBLE_GUN),
+		g_m.NewCell(g_m.CellParams(coords.X+6, coords.Y+3, "#2db9f0ff", ""), g_c.PLAYER_DOBLE_GUN),
 	}
 	return &DoubleGunPlayer{
-		GameObject: g_m.NewGameObject(cells),
+		GameObject: g_m.NewGameObject(cells, g_c.PLAYER_DOBLE_GUN),
 		health:     10,
 	}
 }
 
 func (b *DoubleGunPlayer) Name() string {
-	return game_constants.PLAYER_DOBLE_GUN
+	return g_c.PLAYER_DOBLE_GUN
 }
 
 func (b *DoubleGunPlayer) Tier() g_m.PlayerTier {
@@ -54,8 +54,8 @@ func (b *DoubleGunPlayer) Tier() g_m.PlayerTier {
 func (p *DoubleGunPlayer) Shot() []g_m.IBullet {
 	topLeftCell := p.Cells()[0]
 	topRightCell := p.Cells()[1]
-	bulletLeft := game_objects.NewBullet(topLeftCell.Coords(), "#d7cc05ff", p)
-	bulletRight := game_objects.NewBullet(topRightCell.Coords(), "#d7cc05ff", p)
+	bulletLeft := game_objects.NewBullet(topLeftCell.Coords(), "#d7cc05ff", p.Name())
+	bulletRight := game_objects.NewBullet(topRightCell.Coords(), "#d7cc05ff", p.Name())
 
 	return []g_m.IBullet{bulletLeft, bulletRight}
 }

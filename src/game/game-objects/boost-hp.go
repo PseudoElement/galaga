@@ -16,29 +16,29 @@ type HpBoost struct {
 func NewHpBoost(coords g_m.Coords, injector models.IAppInjector) *HpBoost {
 	cells := []g_m.ICell{
 		//1st
-		g_m.NewCell(g_m.CellParams(coords.X, coords.Y, "#08ae05ff", "")),
-		g_m.NewCell(g_m.CellParams(coords.X+1, coords.Y, "#08ae05ff", "")),
-		g_m.NewCell(g_m.CellParams(coords.X+2, coords.Y, "#08ae05ff", "")),
-		g_m.NewCell(g_m.CellParams(coords.X+3, coords.Y, "#08ae05ff", "")),
+		g_m.NewCell(g_m.CellParams(coords.X, coords.Y, "#08ae05ff", ""), g_c.BOOST_HP),
+		g_m.NewCell(g_m.CellParams(coords.X+1, coords.Y, "#08ae05ff", ""), g_c.BOOST_HP),
+		g_m.NewCell(g_m.CellParams(coords.X+2, coords.Y, "#08ae05ff", ""), g_c.BOOST_HP),
+		g_m.NewCell(g_m.CellParams(coords.X+3, coords.Y, "#08ae05ff", ""), g_c.BOOST_HP),
 		//2nd
-		g_m.NewCell(g_m.CellParams(coords.X, coords.Y+1, "#08ae05ff", "")),
-		g_m.NewCell(g_m.CellParams(coords.X+1, coords.Y+1, "#08ae05ff", "H")),
-		g_m.NewCell(g_m.CellParams(coords.X+2, coords.Y+1, "#08ae05ff", "P")),
-		g_m.NewCell(g_m.CellParams(coords.X+3, coords.Y+1, "#08ae05ff", "")),
+		g_m.NewCell(g_m.CellParams(coords.X, coords.Y+1, "#08ae05ff", ""), g_c.BOOST_HP),
+		g_m.NewCell(g_m.CellParams(coords.X+1, coords.Y+1, "#08ae05ff", "H"), g_c.BOOST_HP),
+		g_m.NewCell(g_m.CellParams(coords.X+2, coords.Y+1, "#08ae05ff", "P"), g_c.BOOST_HP),
+		g_m.NewCell(g_m.CellParams(coords.X+3, coords.Y+1, "#08ae05ff", ""), g_c.BOOST_HP),
 		//3th
-		g_m.NewCell(g_m.CellParams(coords.X, coords.Y+2, "#08ae05ff", "")),
-		g_m.NewCell(g_m.CellParams(coords.X+1, coords.Y+2, "#08ae05ff", "H")),
-		g_m.NewCell(g_m.CellParams(coords.X+2, coords.Y+2, "#08ae05ff", "P")),
-		g_m.NewCell(g_m.CellParams(coords.X+3, coords.Y+2, "#08ae05ff", "")),
+		g_m.NewCell(g_m.CellParams(coords.X, coords.Y+2, "#08ae05ff", ""), g_c.BOOST_HP),
+		g_m.NewCell(g_m.CellParams(coords.X+1, coords.Y+2, "#08ae05ff", "H"), g_c.BOOST_HP),
+		g_m.NewCell(g_m.CellParams(coords.X+2, coords.Y+2, "#08ae05ff", "P"), g_c.BOOST_HP),
+		g_m.NewCell(g_m.CellParams(coords.X+3, coords.Y+2, "#08ae05ff", ""), g_c.BOOST_HP),
 		//4th
-		g_m.NewCell(g_m.CellParams(coords.X, coords.Y+3, "#08ae05ff", "")),
-		g_m.NewCell(g_m.CellParams(coords.X+1, coords.Y+3, "#08ae05ff", "")),
-		g_m.NewCell(g_m.CellParams(coords.X+2, coords.Y+3, "#08ae05ff", "")),
-		g_m.NewCell(g_m.CellParams(coords.X+3, coords.Y+3, "#08ae05ff", "")),
+		g_m.NewCell(g_m.CellParams(coords.X, coords.Y+3, "#08ae05ff", ""), g_c.BOOST_HP),
+		g_m.NewCell(g_m.CellParams(coords.X+1, coords.Y+3, "#08ae05ff", ""), g_c.BOOST_HP),
+		g_m.NewCell(g_m.CellParams(coords.X+2, coords.Y+3, "#08ae05ff", ""), g_c.BOOST_HP),
+		g_m.NewCell(g_m.CellParams(coords.X+3, coords.Y+3, "#08ae05ff", ""), g_c.BOOST_HP),
 	}
 
 	return &HpBoost{
-		GameObject: g_m.NewGameObject(cells),
+		GameObject: g_m.NewGameObject(cells, g_c.BOOST_HP),
 		injector:   injector,
 	}
 }

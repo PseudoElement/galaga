@@ -11,6 +11,7 @@ type Coords struct {
 
 type ICell interface {
 	IDestroyable
+	IOwnerable
 	Color() string
 	SetColor(color string)
 	Coords() Coords

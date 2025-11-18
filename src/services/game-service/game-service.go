@@ -86,7 +86,17 @@ func (gs *AppGameSrv) View() string {
 	}
 
 	gameInfo := lipgloss.JoinHorizontal(lipgloss.Center, headerViews...)
-	header := lipgloss.JoinHorizontal(lipgloss.Left, memoryInfo, gameInfo)
+
+	var count int
+	for _, row := range gs.arena {
+		for _, cell := range row {
+			if g_o.IsPlayer(cell.Owner()) {
+				count++
+			}
+		}
+	}
+
+	header := lipgloss.JoinHorizontal(lipgloss.Left, memoryInfo, gameInfo, fmt.Sprintf(" Cells => %d", count), fmt.Sprintf(" Len => %d", len(gs.player.Cells())))
 
 	view := lipgloss.JoinVertical(lipgloss.Center, header, arenaView)
 
@@ -104,7 +114,7 @@ func (gs *AppGameSrv) StartGame() {
 				int16(widthCount),
 				int16(heightCount),
 				game_srv_styles.BlackColor,
-			)))
+			), ""))
 		}
 
 		gs.arena = append(gs.arena, arenaRow)
@@ -117,7 +127,7 @@ func (gs *AppGameSrv) StartGame() {
 	}
 
 	go gs.runLoop()
-	go checkMemoryUsage(gs)
+	go runBackgroundProcesses(gs)
 }
 
 func (gs *AppGameSrv) EndGame() {
@@ -137,7 +147,7 @@ func (gs *AppGameSrv) EndGame() {
 func (gs *AppGameSrv) SetPlayer(player g_m.IPlayer) {
 	if gs.player != nil {
 		for _, obj := range gs.objectsPool {
-			if g_o.IsPlayer(obj) {
+			if g_o.IsPlayer(obj.Name()) {
 				obj.Destroy()
 			}
 		}
@@ -197,6 +207,19 @@ func (gs *AppGameSrv) runLoop() {
 	}
 }
 
+/*
+ * use on every player movement to clear field
+ */
+func (gs *AppGameSrv) ClearPrevPlayerCellsOnButtonPress() {
+	width, height := gs.ArenaSize()
+	for _, cell := range gs.player.PrevCells() {
+		coords := cell.Coords()
+		if !isCellOutOfArena(cell, width, height) {
+			gs.arena[coords.Y][coords.X] = blackCell(cell)
+		}
+	}
+}
+
 func (gs *AppGameSrv) clearPrevCellsOfObjectsOnTick() {
 	width, height := gs.ArenaSize()
 	updatedObjectsPool := make([]g_m.IGameObject, 0)
@@ -204,20 +227,21 @@ func (gs *AppGameSrv) clearPrevCellsOfObjectsOnTick() {
 		for _, cell := range obj.PrevCells() {
 			coords := cell.Coords()
 			if !isCellOutOfArena(cell, width, height) {
-				gs.arena[coords.Y][coords.X] = g_m.NewCell(cellParams(coords.X, coords.Y, game_srv_styles.BlackColor))
+				gs.arena[coords.Y][coords.X] = blackCell(cell)
 			}
 		}
 	}
 
 	for _, obj := range gs.objectsPool {
-		if obj.Destroyed() {
-			for _, cell := range obj.Cells() {
-				coords := cell.Coords()
-				if !isCellOutOfArena(cell, width, height) {
-					gs.arena[coords.Y][coords.X] = g_m.NewCell(cellParams(coords.X, coords.Y, game_srv_styles.BlackColor))
+		for _, cell := range obj.Cells() {
+			coords := cell.Coords()
+			if !isCellOutOfArena(cell, width, height) {
+				if cell.Destroyed() {
+					gs.arena[coords.Y][coords.X] = blackCell(cell)
 				}
 			}
-		} else {
+		}
+		if !obj.Destroyed() {
 			updatedObjectsPool = append(updatedObjectsPool, obj)
 		}
 	}
@@ -242,7 +266,7 @@ func (gs *AppGameSrv) handleCollision() {
 	for _, currentObj := range gs.objectsPool {
 		for _, cell := range currentObj.Cells() {
 			crossedObject, crossed := objectPoolCellsMap[cell.Coords()]
-			// means 2 objects collided each other in specific cell
+			// means 2 objects collided in specific cell
 			if crossed {
 				handleCollisionScenarios(currentObj, crossedObject, gs)
 			} else {
@@ -254,6 +278,10 @@ func (gs *AppGameSrv) handleCollision() {
 
 func (gs *AppGameSrv) handleEnemySpawn() {
 	spawnLatency := GAME_LOOP_TICK_DELAY_MS * 150
+	if width, _ := gs.ArenaSize(); width > 75 {
+		spawnLatency = GAME_LOOP_TICK_DELAY_MS * 50
+	}
+
 	if gs.gameDurationMs%spawnLatency == 0 && gs.boss == nil {
 		difficulty := gs.injector.Storage().GameDifficulty()
 		spawnedEnemy := gs.injector.Factories().EnemyFactory(difficulty)
@@ -262,7 +290,8 @@ func (gs *AppGameSrv) handleEnemySpawn() {
 }
 
 func (gs *AppGameSrv) handleBossSpawn() {
-	spawnLatency := GAME_LOOP_TICK_DELAY_MS * 280
+	// 1 boss per 2 minutes
+	spawnLatency := GAME_LOOP_TICK_DELAY_MS * 6_000
 	if gs.gameDurationMs%spawnLatency == 0 && gs.boss == nil {
 		difficulty := gs.injector.Storage().GameDifficulty()
 		boss := gs.injector.Factories().BossEnemyFactory(difficulty)
@@ -276,7 +305,7 @@ func (gs *AppGameSrv) handleBoostSpawn() {
 		hpSpawnLatency := GAME_LOOP_TICK_DELAY_MS * 1_500
 		shipSpawnLatency := GAME_LOOP_TICK_DELAY_MS * 3_000
 		difficulty := gs.injector.Storage().GameDifficulty()
-		if gs.gameDurationMs%shipSpawnLatency == 0 {
+		if gs.gameDurationMs%shipSpawnLatency == 0 && gs.player.Tier() < 3 {
 			nextTierShipBoost := gs.injector.Factories().BoostFactory(difficulty, true)
 			gs.objectsPool = append(gs.objectsPool, nextTierShipBoost)
 			return

@@ -12,4 +12,6 @@ type IAppGameSrv interface {
 	Player() game_models.IPlayer
 	SetPlayer(player game_models.IPlayer)
 	ArenaSize() (width, height int)
+
+	ClearPrevPlayerCellsOnButtonPress()
 }

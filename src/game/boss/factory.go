@@ -13,7 +13,7 @@ func CreateBoss(diffLevel consts.DifficultyLevel, injector models.IAppInjector) 
 	windowSize := injector.Storage().WindowSize()
 
 	x := int16(math.Floor(float64(rand.Intn(windowSize.Width)) / 2))
-	y := int16(0)
+	y := int16(1)
 
 	var health int16
 	if diffLevel == consts.EASY {

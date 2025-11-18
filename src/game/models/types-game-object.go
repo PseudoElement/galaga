@@ -50,7 +50,7 @@ type IDamageable interface {
 }
 
 type IOwnerable interface {
-	Owner() IGameObject
+	Owner() string
 }
 
 type IWithPrice interface {

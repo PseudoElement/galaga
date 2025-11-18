@@ -13,15 +13,18 @@ type GameObject struct {
 	height int16
 }
 
-func NewGameObject(cells []ICell) *GameObject {
+func NewGameObject(cells []ICell, name string) *GameObject {
 	// Create deep copies of each cell
 	prevCells := make([]ICell, len(cells))
 	for i, cell := range cells {
 		// Create a new cell with the same properties
-		prevCells[i] = NewCell(CellConstructorParams{
-			Color:  cell.Color(),
-			Coords: cell.Coords(),
-		})
+		prevCells[i] = NewCell(
+			CellConstructorParams{
+				Color:  cell.Color(),
+				Coords: cell.Coords(),
+			},
+			name,
+		)
 	}
 
 	object := &GameObject{

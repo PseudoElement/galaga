@@ -8,17 +8,17 @@ import (
 type Bullet struct {
 	*g_m.GameObject
 
-	damage int16
-	owner  g_m.IGameObject
+	damage    int16
+	ownerName string
 }
 
-func NewBullet(coords g_m.Coords, color string, owner g_m.IGameObject) *Bullet {
-	cells := []g_m.ICell{g_m.NewCell(g_m.CellParams(coords.X, coords.Y, color, ""))}
+func NewBullet(coords g_m.Coords, color string, ownerName string) *Bullet {
+	cells := []g_m.ICell{g_m.NewCell(g_m.CellParams(coords.X, coords.Y, color, ""), g_c.BULLET)}
 
 	return &Bullet{
-		GameObject: g_m.NewGameObject(cells),
+		GameObject: g_m.NewGameObject(cells, g_c.BULLET),
 		damage:     1,
-		owner:      owner,
+		ownerName:  ownerName,
 	}
 }
 
@@ -26,8 +26,8 @@ func (b *Bullet) Name() string {
 	return g_c.BULLET
 }
 
-func (b *Bullet) Owner() g_m.IGameObject {
-	return b.owner
+func (b *Bullet) Owner() string {
+	return b.ownerName
 }
 
 func (b *Bullet) Damage(object g_m.IDamageable) {

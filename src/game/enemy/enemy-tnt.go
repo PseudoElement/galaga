@@ -15,17 +15,17 @@ type TNTEnemy struct {
 func NewTNTEnemy(x, y int16, health int16, injector models.IAppInjector) g_m.IEnemy {
 	cells := []g_m.ICell{
 		//1st
-		g_m.NewCell(g_m.CellParams(x, y, "#ff0101ff", "")),
-		g_m.NewCell(g_m.CellParams(x+1, y, "#ff0101ff", "")),
-		g_m.NewCell(g_m.CellParams(x+2, y, "#ff0101ff", "")),
+		g_m.NewCell(g_m.CellParams(x, y, "#ff0101ff", ""), g_c.TNT),
+		g_m.NewCell(g_m.CellParams(x+1, y, "#ff0101ff", ""), g_c.TNT),
+		g_m.NewCell(g_m.CellParams(x+2, y, "#ff0101ff", ""), g_c.TNT),
 		//2nd
-		g_m.NewCell(g_m.CellParams(x, y+1, "#ff0101ff", "T")),
-		g_m.NewCell(g_m.CellParams(x+1, y+1, "#ff0101ff", "N")),
-		g_m.NewCell(g_m.CellParams(x+2, y+1, "#ff0101ff", "T")),
+		g_m.NewCell(g_m.CellParams(x, y+1, "#ff0101ff", "T"), g_c.TNT),
+		g_m.NewCell(g_m.CellParams(x+1, y+1, "#ff0101ff", "N"), g_c.TNT),
+		g_m.NewCell(g_m.CellParams(x+2, y+1, "#ff0101ff", "T"), g_c.TNT),
 		//3th
-		g_m.NewCell(g_m.CellParams(x, y+2, "#ff0101ff", "")),
-		g_m.NewCell(g_m.CellParams(x+1, y+2, "#ff0101ff", "")),
-		g_m.NewCell(g_m.CellParams(x+2, y+2, "#ff0101ff", "")),
+		g_m.NewCell(g_m.CellParams(x, y+2, "#ff0101ff", ""), g_c.TNT),
+		g_m.NewCell(g_m.CellParams(x+1, y+2, "#ff0101ff", ""), g_c.TNT),
+		g_m.NewCell(g_m.CellParams(x+2, y+2, "#ff0101ff", ""), g_c.TNT),
 	}
 
 	arenaWidth, _ := injector.GameSrv().ArenaSize()
@@ -42,7 +42,7 @@ func NewTNTEnemy(x, y int16, health int16, injector models.IAppInjector) g_m.IEn
 	movementPattern = append(movementPattern, g_m.MoveBottomX0_Y3())
 
 	return &TNTEnemy{
-		Enemy:    NewEnemy(health, cells, movementPattern),
+		Enemy:    NewEnemy(health, cells, movementPattern, g_c.TNT),
 		injector: injector,
 	}
 }

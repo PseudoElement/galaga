@@ -1,7 +1,7 @@
 package player
 
 import (
-	game_constants "github.com/pseudoelement/galaga/src/game/game-constants"
+	g_c "github.com/pseudoelement/galaga/src/game/game-constants"
 	game_objects "github.com/pseudoelement/galaga/src/game/game-objects"
 	g_m "github.com/pseudoelement/galaga/src/game/models"
 	"github.com/pseudoelement/galaga/src/models"
@@ -17,34 +17,34 @@ type DefaultPlayer struct {
 func NewDefaultPlayer(coords g_m.Coords, injector models.IAppInjector) *DefaultPlayer {
 	cells := []g_m.ICell{
 		// 1st
-		g_m.NewCell(g_m.CellParams(coords.X+3, coords.Y, "#eb1eda", "")),
+		g_m.NewCell(g_m.CellParams(coords.X+3, coords.Y, "#eb1eda", ""), g_c.PLAYER_DEFAULT),
 		// 2nd
-		g_m.NewCell(g_m.CellParams(coords.X+3, coords.Y+1, "#eb1eda", "")),
+		g_m.NewCell(g_m.CellParams(coords.X+3, coords.Y+1, "#eb1eda", ""), g_c.PLAYER_DEFAULT),
 		// 3th
-		g_m.NewCell(g_m.CellParams(coords.X, coords.Y+2, "#eb1eda", "")),
-		g_m.NewCell(g_m.CellParams(coords.X+2, coords.Y+2, "#eb1eda", "")),
-		g_m.NewCell(g_m.CellParams(coords.X+3, coords.Y+2, "#eb1eda", "")),
-		g_m.NewCell(g_m.CellParams(coords.X+4, coords.Y+2, "#eb1eda", "")),
-		g_m.NewCell(g_m.CellParams(coords.X+6, coords.Y+2, "#eb1eda", "")),
+		g_m.NewCell(g_m.CellParams(coords.X, coords.Y+2, "#eb1eda", ""), g_c.PLAYER_DEFAULT),
+		g_m.NewCell(g_m.CellParams(coords.X+2, coords.Y+2, "#eb1eda", ""), g_c.PLAYER_DEFAULT),
+		g_m.NewCell(g_m.CellParams(coords.X+3, coords.Y+2, "#eb1eda", ""), g_c.PLAYER_DEFAULT),
+		g_m.NewCell(g_m.CellParams(coords.X+4, coords.Y+2, "#eb1eda", ""), g_c.PLAYER_DEFAULT),
+		g_m.NewCell(g_m.CellParams(coords.X+6, coords.Y+2, "#eb1eda", ""), g_c.PLAYER_DEFAULT),
 		// 4th
-		g_m.NewCell(g_m.CellParams(coords.X, coords.Y+3, "#eb1eda", "")),
-		g_m.NewCell(g_m.CellParams(coords.X+1, coords.Y+3, "#eb1eda", "")),
-		g_m.NewCell(g_m.CellParams(coords.X+2, coords.Y+3, "#eb1eda", "")),
-		g_m.NewCell(g_m.CellParams(coords.X+3, coords.Y+3, "#eb1eda", "")),
-		g_m.NewCell(g_m.CellParams(coords.X+4, coords.Y+3, "#eb1eda", "")),
-		g_m.NewCell(g_m.CellParams(coords.X+5, coords.Y+3, "#eb1eda", "")),
-		g_m.NewCell(g_m.CellParams(coords.X+6, coords.Y+3, "#eb1eda", "")),
+		g_m.NewCell(g_m.CellParams(coords.X, coords.Y+3, "#eb1eda", ""), g_c.PLAYER_DEFAULT),
+		g_m.NewCell(g_m.CellParams(coords.X+1, coords.Y+3, "#eb1eda", ""), g_c.PLAYER_DEFAULT),
+		g_m.NewCell(g_m.CellParams(coords.X+2, coords.Y+3, "#eb1eda", ""), g_c.PLAYER_DEFAULT),
+		g_m.NewCell(g_m.CellParams(coords.X+3, coords.Y+3, "#eb1eda", ""), g_c.PLAYER_DEFAULT),
+		g_m.NewCell(g_m.CellParams(coords.X+4, coords.Y+3, "#eb1eda", ""), g_c.PLAYER_DEFAULT),
+		g_m.NewCell(g_m.CellParams(coords.X+5, coords.Y+3, "#eb1eda", ""), g_c.PLAYER_DEFAULT),
+		g_m.NewCell(g_m.CellParams(coords.X+6, coords.Y+3, "#eb1eda", ""), g_c.PLAYER_DEFAULT),
 	}
 
 	return &DefaultPlayer{
-		GameObject: g_m.NewGameObject(cells),
+		GameObject: g_m.NewGameObject(cells, g_c.PLAYER_DEFAULT),
 		injector:   injector,
 		health:     5,
 	}
 }
 
 func (b *DefaultPlayer) Name() string {
-	return game_constants.PLAYER_DEFAULT
+	return g_c.PLAYER_DEFAULT
 }
 
 func (b *DefaultPlayer) Tier() g_m.PlayerTier {
@@ -54,7 +54,7 @@ func (b *DefaultPlayer) Tier() g_m.PlayerTier {
 func (p *DefaultPlayer) Shot() []g_m.IBullet {
 	// bullets thrown from top cells of the ship
 	topMidCell := p.Cells()[0]
-	bullet := game_objects.NewBullet(topMidCell.Coords(), "#d7cc05ff", p)
+	bullet := game_objects.NewBullet(topMidCell.Coords(), "#d7cc05ff", p.Name())
 
 	return []g_m.IBullet{bullet}
 }

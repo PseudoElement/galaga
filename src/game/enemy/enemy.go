@@ -12,9 +12,9 @@ type Enemy struct {
 	movementIdx     int
 }
 
-func NewEnemy(health int16, cells []g_m.ICell, movementPattern []g_m.MoveDir) *Enemy {
+func NewEnemy(health int16, cells []g_m.ICell, movementPattern []g_m.MoveDir, enemyName string) *Enemy {
 	return &Enemy{
-		GameObject:      g_m.NewGameObject(cells),
+		GameObject:      g_m.NewGameObject(cells, enemyName),
 		health:          health,
 		movementPattern: movementPattern,
 	}

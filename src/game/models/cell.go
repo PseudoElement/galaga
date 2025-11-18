@@ -11,9 +11,10 @@ type Cell struct {
 	style     lipgloss.Style
 	coords    Coords
 	destroyed bool
+	ownerName string
 }
 
-func NewCell(params CellConstructorParams) *Cell {
+func NewCell(params CellConstructorParams, ownerName string) *Cell {
 	style := lipgloss.NewStyle().
 		Height(1).
 		Width(1).
@@ -25,6 +26,7 @@ func NewCell(params CellConstructorParams) *Cell {
 		coords:    params.Coords,
 		style:     style,
 		destroyed: false,
+		ownerName: ownerName,
 	}
 }
 
@@ -55,12 +57,16 @@ func (c *Cell) SetCoords(coords Coords) {
 	c.coords = coords
 }
 
-func (obj *Cell) Destroy() {
-	obj.destroyed = true
+func (c *Cell) Destroy() {
+	c.destroyed = true
 }
 
-func (obj *Cell) Destroyed() bool {
-	return obj.destroyed
+func (c *Cell) Destroyed() bool {
+	return c.destroyed
+}
+
+func (c *Cell) Owner() string {
+	return c.ownerName
 }
 
 var _ ICell = (*Cell)(nil)

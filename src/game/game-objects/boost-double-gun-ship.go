@@ -16,27 +16,27 @@ type DoubleGunShipBoost struct {
 func NewDoubleGunShipBoost(coords g_m.Coords, injector models.IAppInjector) *DoubleGunShipBoost {
 	cells := []g_m.ICell{
 		//1st
-		g_m.NewCell(g_m.CellParams(coords.X+2, coords.Y, "#2db9f0ff", "")),
+		g_m.NewCell(g_m.CellParams(coords.X+2, coords.Y, "#2db9f0ff", ""), g_c.BOOST_DOUBLE_GUN_SHIP),
 		//2nd
-		g_m.NewCell(g_m.CellParams(coords.X+1, coords.Y+1, "#2db9f0ff", "")),
-		g_m.NewCell(g_m.CellParams(coords.X+2, coords.Y+1, "#2db9f0ff", "")),
-		g_m.NewCell(g_m.CellParams(coords.X+3, coords.Y+1, "#2db9f0ff", "")),
+		g_m.NewCell(g_m.CellParams(coords.X+1, coords.Y+1, "#2db9f0ff", ""), g_c.BOOST_DOUBLE_GUN_SHIP),
+		g_m.NewCell(g_m.CellParams(coords.X+2, coords.Y+1, "#2db9f0ff", ""), g_c.BOOST_DOUBLE_GUN_SHIP),
+		g_m.NewCell(g_m.CellParams(coords.X+3, coords.Y+1, "#2db9f0ff", ""), g_c.BOOST_DOUBLE_GUN_SHIP),
 		//3th
-		g_m.NewCell(g_m.CellParams(coords.X, coords.Y+2, "#2db9f0ff", "2")),
-		g_m.NewCell(g_m.CellParams(coords.X+1, coords.Y+2, "#2db9f0ff", "x")),
-		g_m.NewCell(g_m.CellParams(coords.X+2, coords.Y+2, "#2db9f0ff", "G")),
-		g_m.NewCell(g_m.CellParams(coords.X+3, coords.Y+2, "#2db9f0ff", "U")),
-		g_m.NewCell(g_m.CellParams(coords.X+4, coords.Y+2, "#2db9f0ff", "N")),
+		g_m.NewCell(g_m.CellParams(coords.X, coords.Y+2, "#2db9f0ff", "2"), g_c.BOOST_DOUBLE_GUN_SHIP),
+		g_m.NewCell(g_m.CellParams(coords.X+1, coords.Y+2, "#2db9f0ff", "x"), g_c.BOOST_DOUBLE_GUN_SHIP),
+		g_m.NewCell(g_m.CellParams(coords.X+2, coords.Y+2, "#2db9f0ff", "G"), g_c.BOOST_DOUBLE_GUN_SHIP),
+		g_m.NewCell(g_m.CellParams(coords.X+3, coords.Y+2, "#2db9f0ff", "U"), g_c.BOOST_DOUBLE_GUN_SHIP),
+		g_m.NewCell(g_m.CellParams(coords.X+4, coords.Y+2, "#2db9f0ff", "N"), g_c.BOOST_DOUBLE_GUN_SHIP),
 		//4th
-		g_m.NewCell(g_m.CellParams(coords.X+1, coords.Y+3, "#2db9f0ff", "")),
-		g_m.NewCell(g_m.CellParams(coords.X+2, coords.Y+3, "#2db9f0ff", "")),
-		g_m.NewCell(g_m.CellParams(coords.X+3, coords.Y+3, "#2db9f0ff", "")),
+		g_m.NewCell(g_m.CellParams(coords.X+1, coords.Y+3, "#2db9f0ff", ""), g_c.BOOST_DOUBLE_GUN_SHIP),
+		g_m.NewCell(g_m.CellParams(coords.X+2, coords.Y+3, "#2db9f0ff", ""), g_c.BOOST_DOUBLE_GUN_SHIP),
+		g_m.NewCell(g_m.CellParams(coords.X+3, coords.Y+3, "#2db9f0ff", ""), g_c.BOOST_DOUBLE_GUN_SHIP),
 		//5th
-		g_m.NewCell(g_m.CellParams(coords.X+2, coords.Y+4, "#2db9f0ff", "")),
+		g_m.NewCell(g_m.CellParams(coords.X+2, coords.Y+4, "#2db9f0ff", ""), g_c.BOOST_DOUBLE_GUN_SHIP),
 	}
 
 	return &DoubleGunShipBoost{
-		GameObject: g_m.NewGameObject(cells),
+		GameObject: g_m.NewGameObject(cells, g_c.BOOST_DOUBLE_GUN_SHIP),
 		injector:   injector,
 	}
 }

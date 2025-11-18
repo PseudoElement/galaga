@@ -12,12 +12,12 @@ type CellWithDamage struct {
 	destructTime int
 }
 
-func NewCellWithDamage(params g_m.CellWithDamageConstructorParams) *CellWithDamage {
+func NewCellWithDamage(params g_m.CellWithDamageConstructorParams, ownerName string) *CellWithDamage {
 	msNow := time.Now().UnixMilli()
 	destructTime := int(msNow + 150)
 
 	return &CellWithDamage{
-		Cell:         g_m.NewCell(params.CellConstructorParams),
+		Cell:         g_m.NewCell(params.CellConstructorParams, ownerName),
 		damageCount:  params.DamageCount,
 		destructTime: destructTime,
 	}
