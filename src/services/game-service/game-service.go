@@ -389,9 +389,12 @@ func (gs *AppGameSrv) loadBestScore() {
 	throwOnError(err, "AppGameSrv_loadBestScore_ReadFile")
 
 	bestScore, err := strconv.Atoi(string(fileBytes))
-	throwOnError(err, "AppGameSrv_loadBestScore_Atoi")
+	if err != nil {
+		gs.bestScore = 0
+	} else {
+		gs.bestScore = int32(bestScore)
+	}
 
-	gs.bestScore = int32(bestScore)
 }
 
 func (gs *AppGameSrv) saveBestScoreIfRecord(currentScore int32) {
