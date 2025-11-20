@@ -293,7 +293,7 @@ func (gs *AppGameSrv) handleBossSpawn() {
 func (gs *AppGameSrv) handleBoostSpawn() {
 	if gs.boss == nil {
 		hpSpawnLatency := GAME_LOOP_TICK_DELAY_MS * 1_500
-		shipSpawnLatency := GAME_LOOP_TICK_DELAY_MS * 3_000
+		shipSpawnLatency := GAME_LOOP_TICK_DELAY_MS * 2_000
 		difficulty := gs.injector.Storage().GameDifficulty()
 		if gs.gameDurationMs%shipSpawnLatency == 0 && gs.player.Tier() < 3 {
 			nextTierShipBoost := gs.injector.Factories().BoostFactory(difficulty, true)

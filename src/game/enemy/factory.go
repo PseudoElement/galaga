@@ -23,10 +23,10 @@ func CreateEnemy(diffLevel consts.DifficultyLevel, injector models.IAppInjector)
 		health = 7
 	}
 
-	randBit := rand.Intn(3)
-	if randBit == 0 {
+	randBit := rand.Intn(10)
+	if randBit >= 5 {
 		return NewOctopusEnemy(x, y, health)
-	} else if randBit == 1 {
+	} else if randBit >= 2 {
 		return NewSmallSpaceShipEnemy(x, y, health)
 	} else {
 		return NewTNTEnemy(x, 0, health, injector)
