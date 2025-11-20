@@ -156,7 +156,7 @@ func (gs *AppGameSrv) AddObjectsToObjectPool(objects ...g_m.IGameObject) {
 func (gs *AppGameSrv) runLoop() {
 	x, y := gs.ArenaSize()
 	for !gs.stop && gs.player != nil {
-		if gs.player.Health() <= 0 {
+		if gs.player.Destroyed() {
 			gs.EndGame()
 		}
 
@@ -280,8 +280,8 @@ func (gs *AppGameSrv) handleEnemySpawn() {
 }
 
 func (gs *AppGameSrv) handleBossSpawn() {
-	// 1 boss per 2 minutes
-	spawnLatency := GAME_LOOP_TICK_DELAY_MS * 6_000
+	// 1 boss per 1 minute
+	spawnLatency := GAME_LOOP_TICK_DELAY_MS * 3_000
 	if gs.gameDurationMs%spawnLatency == 0 && gs.boss == nil {
 		difficulty := gs.injector.Storage().GameDifficulty()
 		boss := gs.injector.Factories().BossEnemyFactory(difficulty)
