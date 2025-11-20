@@ -29,6 +29,9 @@ func (e *Enemy) MoveDir(arenaWidth, arenaHeight int) g_m.MoveDir {
 	moveDir := e.movementPattern[e.movementIdx]
 	e.movementIdx++
 
+	if moveDir == g_m.MoveNoneX0_Y0() {
+		return moveDir
+	}
 	// check next moveDir if wants to move right being on right edge
 	if e.staysOnArenaLeftEdge() && moveDir.X < 0 {
 		return e.MoveDir(arenaWidth, arenaHeight)

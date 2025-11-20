@@ -30,7 +30,7 @@ func NewGameObject(cells []ICell, name string) *GameObject {
 	object := &GameObject{
 		cells:       cells,
 		prevCells:   prevCells,
-		prevMoveDir: MoveDir{X: 0, Y: 0},
+		prevMoveDir: MoveNoneX0_Y0(),
 	}
 	object.setSize()
 

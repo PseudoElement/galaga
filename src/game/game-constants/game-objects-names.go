@@ -12,7 +12,13 @@ const (
 // bosses
 const (
 	BOSS_JUGGERNAUT = "JuggernautBoss"
+	BOSS_LAZER      = "LazerBoss"
 )
+
+var BOSS_NAMES = [2]EnemyType{
+	BOSS_JUGGERNAUT,
+	BOSS_LAZER,
+}
 
 var EMEMY_NAMES = [4]EnemyType{
 	OCTOPUS,

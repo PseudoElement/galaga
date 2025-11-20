@@ -87,18 +87,8 @@ func (gs *AppGameSrv) View() string {
 
 	gameInfo := lipgloss.JoinHorizontal(lipgloss.Center, headerViews...)
 
-	var count int
-	for _, row := range gs.arena {
-		for _, cell := range row {
-			if g_o.IsPlayer(cell.Owner()) {
-				count++
-			}
-		}
-	}
-
-	header := lipgloss.JoinHorizontal(lipgloss.Left, memoryInfo, gameInfo, fmt.Sprintf(" Cells => %d", count), fmt.Sprintf(" Len => %d", len(gs.player.Cells())))
-
-	view := lipgloss.JoinVertical(lipgloss.Center, header, arenaView)
+	headerView := lipgloss.JoinHorizontal(lipgloss.Left, memoryInfo, gameInfo)
+	view := lipgloss.JoinVertical(lipgloss.Center, headerView, arenaView)
 
 	return view
 }
@@ -291,7 +281,8 @@ func (gs *AppGameSrv) handleEnemySpawn() {
 
 func (gs *AppGameSrv) handleBossSpawn() {
 	// 1 boss per 2 minutes
-	spawnLatency := GAME_LOOP_TICK_DELAY_MS * 6_000
+	// spawnLatency := GAME_LOOP_TICK_DELAY_MS * 6_000
+	spawnLatency := GAME_LOOP_TICK_DELAY_MS * 300
 	if gs.gameDurationMs%spawnLatency == 0 && gs.boss == nil {
 		difficulty := gs.injector.Storage().GameDifficulty()
 		boss := gs.injector.Factories().BossEnemyFactory(difficulty)
@@ -339,6 +330,10 @@ func (gs *AppGameSrv) handleEnemyBehaviourOnTick(enemy g_m.IEnemy) {
 	width, height := gs.ArenaSize()
 	movementDelay := enemy.MovementDelay(GAME_LOOP_TICK_DELAY_MS)
 	if gs.gameDurationMs%movementDelay == 0 {
+		directionChanger, isDirectionChanger := enemy.(g_m.IDirectionChanger)
+		if isDirectionChanger {
+			directionChanger.UpdateMovementPattern(gs.player)
+		}
 		enemy.Move(enemy.MoveDir(width, height))
 	}
 

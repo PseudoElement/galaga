@@ -85,7 +85,7 @@ func (app *App) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				}
 			}
 			return app, nil
-		case "w":
+		case "w", "W", "ц", "Ц":
 			if app.gameSrv.IsPlaying() {
 				app.gameSrv.ClearPrevPlayerCellsOnButtonPress()
 				moveDir := g_m.MoveTopX0_Y3()
@@ -94,7 +94,7 @@ func (app *App) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				}
 			}
 			return app, nil
-		case "a":
+		case "a", "A", "ф", "Ф":
 			if app.gameSrv.IsPlaying() {
 				app.gameSrv.ClearPrevPlayerCellsOnButtonPress()
 				moveDir := g_m.MoveLeftX5_Y0()
@@ -103,7 +103,7 @@ func (app *App) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				}
 			}
 			return app, nil
-		case "s":
+		case "s", "S", "ы", "Ы":
 			if app.gameSrv.IsPlaying() {
 				app.gameSrv.ClearPrevPlayerCellsOnButtonPress()
 				moveDir := g_m.MoveBottomX0_Y3()
@@ -112,7 +112,7 @@ func (app *App) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				}
 			}
 			return app, nil
-		case "d":
+		case "d", "D", "в", "В":
 			if app.gameSrv.IsPlaying() {
 				app.gameSrv.ClearPrevPlayerCellsOnButtonPress()
 				moveDir := g_m.MoveRightX5_Y0()
