@@ -1,7 +1,7 @@
 build-mac:
 	go build -o ./builds/galaga-mac
 
-build-win64:
+m:
 	GOOS=windows GOARCH=amd64 go build -o builds/galaga-win64.exe
 
 build-linux-amd64:

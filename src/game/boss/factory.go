@@ -18,7 +18,6 @@ func CreateBoss(diffLevel consts.DifficultyLevel, injector models.IAppInjector) 
 	y := int16(1)
 
 	bossName := selectNextBossName()
-	return NewLazerBoss(x, y, getLazerHP(diffLevel), injector)
 	switch bossName {
 	case game_constants.BOSS_JUGGERNAUT:
 		return NewJuggernautBoss(x, y, getJuggernautHP(diffLevel), injector)

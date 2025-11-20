@@ -114,10 +114,7 @@ func (b *LazerBoss) Shot() []g_m.IBullet {
 	for bulletCoordY := shipHeight; bulletCoordY < arenaHeight-paddingFromLazerEndToArenaBottom; bulletCoordY++ {
 		leftGunBullet := g_o.NewBullet(g_m.Coords{X: leftGunCoord.X, Y: int16(bulletCoordY)}, "#cf1374", b.Name())
 		rightGunBullet := g_o.NewBullet(g_m.Coords{X: rightGunCoord.X, Y: int16(bulletCoordY)}, "#cf1374", b.Name())
-
 		bullets = append(bullets, leftGunBullet, rightGunBullet)
-
-		bulletCoordY++
 	}
 
 	return bullets

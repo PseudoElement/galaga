@@ -281,8 +281,7 @@ func (gs *AppGameSrv) handleEnemySpawn() {
 
 func (gs *AppGameSrv) handleBossSpawn() {
 	// 1 boss per 2 minutes
-	// spawnLatency := GAME_LOOP_TICK_DELAY_MS * 6_000
-	spawnLatency := GAME_LOOP_TICK_DELAY_MS * 300
+	spawnLatency := GAME_LOOP_TICK_DELAY_MS * 6_000
 	if gs.gameDurationMs%spawnLatency == 0 && gs.boss == nil {
 		difficulty := gs.injector.Storage().GameDifficulty()
 		boss := gs.injector.Factories().BossEnemyFactory(difficulty)
